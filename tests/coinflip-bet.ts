@@ -10,7 +10,10 @@ describe("coinflip-bet", () => {
 
   it("Is initialized!", async () => {
     // Add your test here.
-    const tx = await program.methods.initialize().rpc();
+    const data = new anchor.BN(1);
+    const tx = await program.methods.initialize(data).rpc();
+    const two = await program.methods.update().rpc();
     console.log("Your transaction signature", tx);
+    console.log("Your two signature", two);
   });
 });
