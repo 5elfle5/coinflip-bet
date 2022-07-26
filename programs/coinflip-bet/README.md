@@ -1,0 +1,1 @@
+Bet on a coin flip
