@@ -19,28 +19,28 @@ describe("coinflip-bet", () => {
     const program = anchor.workspace.CoinflipBet;
 
     // The Account to create.
-    const myAccount = anchor.web3.Keypair.generate();
+    const flipResult = anchor.web3.Keypair.generate();
 
     // Create the new account and initialize it with the program.
     // #region code-simplified
     await program.rpc.initialize(new anchor.BN(1234), {
       accounts: {
-        myAccount: myAccount.publicKey,
+        flipResult: flipResult.publicKey,
         user: provider.wallet.publicKey,
         systemProgram: SystemProgram.programId,
       },
-      signers: [myAccount],
+      signers: [flipResult],
     });
     // #endregion code-simplified
 
     // Fetch the newly created account from the cluster.
-    const account = await program.account.myAccount.fetch(myAccount.publicKey);
+    const account = await program.account.flipResult.fetch(flipResult.publicKey);
 
     // Check it's state was initialized.
-    assert.ok(account.data.eq(new anchor.BN(1234)));
+    assert.ok(account.roll.eq(new anchor.BN(1234)));
 
     // Store the account for the next test.
-    _myAccount = myAccount;
+    _myAccount = flipResult;
   });
 
   it("Updates a previously created account", async () => {
@@ -54,15 +54,15 @@ describe("coinflip-bet", () => {
     // Invoke the update rpc.
     await program.rpc.update({
       accounts: {
-        myAccount: myAccount.publicKey,
+        flipResult: myAccount.publicKey,
       },
     });
 
     // Fetch the newly updated account.
-    const account = await program.account.myAccount.fetch(myAccount.publicKey);
+    const account = await program.account.flipResult.fetch(myAccount.publicKey);
 
     console.log("account data");
-    console.log(account.data);
+    console.log(account.roll);
     console.log(account.won);
   });
 });

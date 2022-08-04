@@ -7,18 +7,18 @@ mod coinflip_bet {
     use super::*;
 
     pub fn initialize(ctx: Context<Initialize>, data: i64) -> Result<()> {
-        let my_account = &mut ctx.accounts.my_account;
-        my_account.data = data;
+        let my_account = &mut ctx.accounts.flip_result;
+        my_account.roll = data;
         my_account.won = false;
         Ok(())
     }
 
     pub fn update(ctx: Context<Update>) -> Result<()> {
-        let my_account = &mut ctx.accounts.my_account;
+        let my_account = &mut ctx.accounts.flip_result;
         let timestamp = Clock::get()?.unix_timestamp;
         let roll = ((timestamp + 7789) * 997) % 100;
         let won = roll < 49;
-        my_account.data = roll;
+        my_account.roll = roll;
         my_account.won = won;
         Ok(())
     }
@@ -27,7 +27,7 @@ mod coinflip_bet {
 #[derive(Accounts)]
 pub struct Initialize<'info> {
     #[account(init, payer = user, space = 8 + 8 + 1)]
-    pub my_account: Account<'info, MyAccount>,
+    pub flip_result: Account<'info, FlipResult>,
     #[account(mut)]
     pub user: Signer<'info>,
     pub system_program: Program<'info, System>,
@@ -36,11 +36,11 @@ pub struct Initialize<'info> {
 #[derive(Accounts)]
 pub struct Update<'info> {
     #[account(mut)]
-    pub my_account: Account<'info, MyAccount>,
+    pub flip_result: Account<'info, FlipResult>,
 }
 
 #[account]
-pub struct MyAccount {
-    pub data: i64,
+pub struct FlipResult {
+    pub roll: i64,
     pub won: bool,
 }
