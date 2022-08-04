@@ -4,7 +4,7 @@ import { Program } from "@project-serum/anchor";
 import { CoinflipBet } from "../target/types/coinflip_bet";
 const { SystemProgram } = anchor.web3;
 
-let _myAccount;
+let _flipResult;
 
 describe("coinflip-bet", () => {
   // Use a local provider.
@@ -40,11 +40,11 @@ describe("coinflip-bet", () => {
     assert.ok(account.roll.eq(new anchor.BN(1234)));
 
     // Store the account for the next test.
-    _myAccount = flipResult;
+    _flipResult = flipResult;
   });
 
   it("Updates a previously created account", async () => {
-    const myAccount = _myAccount;
+    const flipResult = _flipResult;
 
     // #region update-test
 
@@ -54,12 +54,12 @@ describe("coinflip-bet", () => {
     // Invoke the update rpc.
     await program.rpc.update({
       accounts: {
-        flipResult: myAccount.publicKey,
+        flipResult: flipResult.publicKey,
       },
     });
 
     // Fetch the newly updated account.
-    const account = await program.account.flipResult.fetch(myAccount.publicKey);
+    const account = await program.account.flipResult.fetch(flipResult.publicKey);
 
     console.log("account data");
     console.log(account.roll);
