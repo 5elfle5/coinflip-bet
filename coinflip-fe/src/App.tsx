@@ -8,6 +8,8 @@ function App() {
   const [provider, setProvider] = useState<PhantomProvider | null>(null);
   useEffect(() => {
     // @ts-ignore
+    console.log(window.solana);
+    // @ts-ignore
     setProvider(window.solana);
   }, []);
   const [walletKey, setWalletKey] = useState<PublicKey>(
@@ -19,8 +21,6 @@ function App() {
     console.log(response.publicKey.toString());
     setWalletKey(response.publicKey);
   };
-  // @ts-ignore
-  console.log(window.solana);
   const flipTheCoin = async () => {
     const network = "http://127.0.0.1:8899";
     const connection = new Connection(network);
@@ -30,8 +30,8 @@ function App() {
         keys: [
           { pubkey: walletKey, isSigner: true, isWritable: false }
         ],
-        data: Buffer.from([0x00, 0x100]),
-        programId: new PublicKey("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"),
+        data: Buffer.from([0, 0, 0, 0, 0, 0, 0, 0, 0, 100]),
+        programId: new PublicKey("Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2"),
       })
     );
     transaction.recentBlockhash = blockhash.blockhash;
