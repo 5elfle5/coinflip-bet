@@ -20,7 +20,7 @@ function App() {
     setWalletKey(response.publicKey);
   };
   // @ts-ignore
-  // console.log(window.solana);
+  console.log(window.solana);
   const flipTheCoin = async () => {
     const network = "http://127.0.0.1:8899";
     const connection = new Connection(network);
@@ -35,6 +35,7 @@ function App() {
       })
     );
     transaction.recentBlockhash = blockhash.blockhash;
+    transaction.feePayer = walletKey;
     // @ts-ignore
     const { signature } = await window.solana.signAndSendTransaction(transaction);
     await connection.getSignatureStatus(signature);
