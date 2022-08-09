@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { PhantomProvider } from './interfaces/PhantonProvider';
 import * as borsh from "@bonfida/borsh-js";
 import { Buffer } from "buffer";
+import { struct, u32, nu64 } from "@solana/buffer-layout";
 // Get Solana
 import {
   Keypair,
@@ -10,65 +11,40 @@ import {
   PublicKey,
   Transaction,
   TransactionInstruction,
-  sendAndConfirmTransaction,
   SignatureStatus,
   RpcResponseAndContext,
 } from "@solana/web3.js";
 
-// Flexible class that takes properties and imbues them
-// to the object instance
-class Assignable {
-  constructor(properties: any) {
-    Object.keys(properties).map((key) => {
-      // @ts-ignore
-      return (this[key] = properties[key]);
-    });
-  }
-}
-
-// Our instruction payload vocabulary
-class Payload extends Assignable {}
-
-// Borsh needs a schema describing the payload
-const payloadSchema = new Map([
-  [
-    Payload,
-    {
-      kind: "struct",
-      fields: [
-        ["id", "u8"],
-        ["data", "i64"],
-      ],
-    },
-  ],
-]);
-
-// Instruction variant indexes
-enum InstructionVariant {
-  Initialize = 0,
-  Update,
-}
-
 async function doThing(
   walletKey: PublicKey,
 ): Promise<RpcResponseAndContext<SignatureStatus | null>> {
-  const payload = new Payload({
-    id: InstructionVariant.Initialize,
-    data: 100,
-  });
-  const data = Buffer.from(borsh.serialize(payloadSchema, payload));
-  const instruction = new TransactionInstruction({
-    data: data,
-    keys: [
-      { pubkey: walletKey, isSigner: true, isWritable: false }
-    ],
+  let allocateStruct = {
+    index: 0,
+    layout: struct([
+      // @ts-ignore
+      u32('instruction'),
+      // @ts-ignore
+      nu64('data'),
+    ])
+  };
+  let payload = Buffer.alloc(allocateStruct.layout.span);
+  let params = { data: 100 };
+  let layoutFields = Object.assign({instruction: allocateStruct.index}, params);
+  allocateStruct.layout.encode(layoutFields, payload);
+  let allocateTransaction = new Transaction();
+  allocateTransaction.feePayer = walletKey;
+  let keys = [{pubkey: walletKey, isSigner: true, isWritable: true}];
+  allocateTransaction.add(new TransactionInstruction({
+    keys,
     programId: new PublicKey("Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2"),
-  });
-
-  // @ts-ignore
-  const { signature } = await window.solana.signAndSendTransaction(new Transaction().add(instruction));
+    data: payload,
+  }));
   const network = "http://127.0.0.1:8899";
   const connection = new Connection(network);
+  let blockhash = await connection.getLatestBlockhash('finalized');
+  allocateTransaction.recentBlockhash = blockhash.blockhash;
+  // @ts-ignore
+  const { signature } = await window.solana.signAndSendTransaction(allocateTransaction);
   return await connection.getSignatureStatus(signature);
 }
 
