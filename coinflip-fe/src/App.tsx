@@ -1,8 +1,76 @@
 import './App.css';
 import { useEffect, useState } from "react";
 import { PhantomProvider } from './interfaces/PhantonProvider';
-import { Connection, Transaction, TransactionInstruction } from '@solana/web3.js';
-import { PublicKey } from '@solana/web3.js';
+import * as borsh from "@bonfida/borsh-js";
+import { Buffer } from "buffer";
+// Get Solana
+import {
+  Keypair,
+  Connection,
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+  sendAndConfirmTransaction,
+  SignatureStatus,
+  RpcResponseAndContext,
+} from "@solana/web3.js";
+
+// Flexible class that takes properties and imbues them
+// to the object instance
+class Assignable {
+  constructor(properties: any) {
+    Object.keys(properties).map((key) => {
+      // @ts-ignore
+      return (this[key] = properties[key]);
+    });
+  }
+}
+
+// Our instruction payload vocabulary
+class Payload extends Assignable {}
+
+// Borsh needs a schema describing the payload
+const payloadSchema = new Map([
+  [
+    Payload,
+    {
+      kind: "struct",
+      fields: [
+        ["id", "u8"],
+        ["data", "i64"],
+      ],
+    },
+  ],
+]);
+
+// Instruction variant indexes
+enum InstructionVariant {
+  Initialize = 0,
+  Update,
+}
+
+async function doThing(
+  walletKey: PublicKey,
+): Promise<RpcResponseAndContext<SignatureStatus | null>> {
+  const payload = new Payload({
+    id: InstructionVariant.Initialize,
+    data: 100,
+  });
+  const data = Buffer.from(borsh.serialize(payloadSchema, payload));
+  const instruction = new TransactionInstruction({
+    data: data,
+    keys: [
+      { pubkey: walletKey, isSigner: true, isWritable: false }
+    ],
+    programId: new PublicKey("Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2"),
+  });
+
+  // @ts-ignore
+  const { signature } = await window.solana.signAndSendTransaction(new Transaction().add(instruction));
+  const network = "http://127.0.0.1:8899";
+  const connection = new Connection(network);
+  return await connection.getSignatureStatus(signature);
+}
 
 function App() {
   const [provider, setProvider] = useState<PhantomProvider | null>(null);
@@ -18,27 +86,11 @@ function App() {
   const connectWallet = async () => {
     // @ts-ignore
     const response = await window.solana.connect();
-    console.log(response.publicKey.toString());
+    console.log(JSON.stringify(response));
     setWalletKey(response.publicKey);
   };
   const flipTheCoin = async () => {
-    const network = "http://127.0.0.1:8899";
-    const connection = new Connection(network);
-    let blockhash = await connection.getLatestBlockhash('finalized');
-    const transaction = new Transaction().add(
-      new TransactionInstruction({
-        keys: [
-          { pubkey: walletKey, isSigner: true, isWritable: false }
-        ],
-        data: Buffer.from([0, 0, 0, 0, 0, 0, 0, 0, 0, 100]),
-        programId: new PublicKey("Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2"),
-      })
-    );
-    transaction.recentBlockhash = blockhash.blockhash;
-    transaction.feePayer = walletKey;
-    // @ts-ignore
-    const { signature } = await window.solana.signAndSendTransaction(transaction);
-    await connection.getSignatureStatus(signature);
+    return await doThing(walletKey);
   };
   return (
     <>
