@@ -1,7 +1,5 @@
 import * as anchor from "@project-serum/anchor";
 import * as assert from "assert";
-import { Program } from "@project-serum/anchor";
-import { CoinflipBet } from "../target/types/coinflip_bet";
 const { SystemProgram } = anchor.web3;
 
 let _flipResult;

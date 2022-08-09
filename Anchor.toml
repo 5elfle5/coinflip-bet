@@ -2,7 +2,7 @@
 seeds = false
 skip-lint = false
 [programs.localnet]
-coinflip_bet = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+coinflip_bet = "Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2"
 
 [registry]
 url = "https://api.apr.dev"
