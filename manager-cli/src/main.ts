@@ -9,25 +9,26 @@ async function main() {
   const wallet = NodeWallet.local();
   // wallet.connect();
   const provider = new anchor.AnchorProvider(
-      connection,
-      // @ts-ignore
-      wallet,
-      anchor.AnchorProvider.defaultOptions()
+    connection,
+    // @ts-ignore
+    wallet,
+    anchor.AnchorProvider.defaultOptions()
   );
   const programId = new PublicKey("Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2");
   const [wagerPubkey, ]= await PublicKey.findProgramAddress([Buffer.from("wager")], wallet.publicKey);
   // @ts-ignore
   const program = new anchor.Program(IDL, programId, provider);
+  console.log(`wager ${wagerPubkey}; wallet ${wallet.publicKey}`);
   await program.methods.initialize()
   .accounts(
-      {
-          wager: wagerPubkey,
-          user: wallet.publicKey,
-          systemProgram: SystemProgram.programId,
-      }
+    {
+      wager: wagerPubkey,
+      user: wallet.publicKey,
+      systemProgram: SystemProgram.programId,
+    }
   )
   .signers(
-      [wallet.payer]
+    [wallet.payer]
   )
   .rpc();
 }

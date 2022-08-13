@@ -7,13 +7,19 @@ declare_id!("Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2");
 
 #[program]
 mod coinflip_bet {
-    use anchor_lang::solana_program::system_instruction;
+    use anchor_lang::solana_program::{system_instruction, program::invoke_signed};
 
     use super::*;
 
     #[access_control(ctx.accounts.validate())]
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        system_instruction::transfer(&ctx.accounts.user.key(), &ctx.accounts.wager.key(), 1000);
+        let ix = system_instruction::transfer(&ctx.accounts.user.key(), &ctx.accounts.wager.key(), 1000);
+        invoke_signed(
+          &ix,
+          &[ctx.accounts.user.to_account_info(), ctx.accounts.system_program.to_account_info()],
+          &[]
+          // &[&[ctx.accounts.user.key.to_bytes().as_ref(), ctx.accounts.system_program.key.to_bytes().as_ref()]]
+        )?;
         Ok(())
     }
 
