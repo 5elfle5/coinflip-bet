@@ -1,40 +1,39 @@
-import { struct } from '@solana/buffer-layout';
-import { SendTransactionOptions, WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { ConnectionProvider, useConnection, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
-import { TransactionInstruction } from '@solana/web3.js';
-import { Connection } from '@solana/web3.js';
-import { Transaction } from '@solana/web3.js';
 import { PublicKey } from '@solana/web3.js';
 import React, { FC, ReactNode, useMemo, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { Keypair, SystemProgram } from '@solana/web3.js';
-import { u32, nu64 } from '@solana/buffer-layout';
 import * as anchor from "@project-serum/anchor";
 import * as IDL from '../../target/idl/coinflip_bet.json';
 
-type SendTransaction = (transaction: Transaction, connection: Connection, options?: SendTransactionOptions | undefined) => Promise<string>;
-
-async function getThing(program: anchor.Program<anchor.Idl>, flipResult: Keypair): Promise<any> {
+async function getRoll(program: anchor.Program<anchor.Idl>, flipResult: Keypair): Promise<any> {
     const account = await program.account.flipResult.fetch(flipResult.publicKey);
     // @ts-ignore
     return account.roll.words[0];
 }
 
-async function doThing(
+async function initialize(
     publicKey: PublicKey,
     program: anchor.Program<anchor.Idl>,
     flipResult: Keypair,
   ): Promise<any> {
-    await program.rpc.initialize(new anchor.BN(1234), {
-      accounts: {
-        flipResult: flipResult.publicKey,
-        user: publicKey,
-        systemProgram: SystemProgram.programId,
-      },
-      signers: [flipResult],
-    });
+    await program.methods.initialize(
+        new anchor.BN(1234),
+    )
+    .accounts(
+        {
+            flipResult: flipResult.publicKey,
+            user: publicKey,
+            systemProgram: SystemProgram.programId,
+        }
+    )
+    .signers(
+        [flipResult]
+    )
+    .rpc();
 }
 
 export const App: FC = () => {
@@ -70,7 +69,7 @@ const WalletContext: FC<{ children: ReactNode }> = ({ children }) => {
 };
 
 const WalletContent: FC = () => {
-    const { publicKey, sendTransaction } = useWallet();
+    const { publicKey, } = useWallet();
     const { connection } = useConnection();
     const [roll, setRoll] = useState(0);
     const flipResult = useMemo(() => anchor.web3.Keypair.generate(), [publicKey]);
@@ -91,11 +90,11 @@ const WalletContent: FC = () => {
     }, [publicKey])
     const transact = async () => {
         if (!publicKey) return;
-        await doThing(publicKey, program, flipResult);
+        await initialize(publicKey, program, flipResult);
     };
     const result = async () => {
         if (!publicKey) return;
-        const thing = await getThing(program, flipResult);
+        const thing = await getRoll(program, flipResult);
         setRoll(thing);
     };
     return (
