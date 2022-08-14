@@ -71,7 +71,7 @@ const WalletContent: FC = () => {
       wallet,
       anchor.AnchorProvider.defaultOptions()
     );
-    const programId = new PublicKey("Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2");
+    const programId = new PublicKey("4SmSWTXY3MXgXW35rRfvfgEpZLASPeAbFcF87kyqjhNu");
     // @ts-ignore
     const program = new anchor.Program(IDL, programId, provider);
     return program;
