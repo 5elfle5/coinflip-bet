@@ -2,14 +2,14 @@
 seeds = false
 skip-lint = false
 [programs.localnet]
-coinflip_bet = "Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2"
+coinflip_bet = "4SmSWTXY3MXgXW35rRfvfgEpZLASPeAbFcF87kyqjhNu"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
 cluster = "localnet"
-wallet = "/Users/andisnow/.config/solana/id.json"
+wallet = "/home/andy/.config/solana/id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"

@@ -3,7 +3,7 @@ use vipers::prelude::*;
 
 mod account_validators;
 
-declare_id!("Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2");
+declare_id!("4SmSWTXY3MXgXW35rRfvfgEpZLASPeAbFcF87kyqjhNu");
 
 #[program]
 mod coinflip_bet {
