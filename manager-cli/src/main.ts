@@ -14,7 +14,7 @@ async function main() {
     wallet,
     anchor.AnchorProvider.defaultOptions()
   );
-  const programId = new PublicKey("Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2");
+  const programId = new PublicKey("4SmSWTXY3MXgXW35rRfvfgEpZLASPeAbFcF87kyqjhNu");
   const [wagerPubkey, ]= await PublicKey.findProgramAddress([Buffer.from("wager")], wallet.publicKey);
   // @ts-ignore
   const program = new anchor.Program(IDL, programId, provider);
