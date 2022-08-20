@@ -5,21 +5,33 @@ mod account_validators;
 
 declare_id!("4SmSWTXY3MXgXW35rRfvfgEpZLASPeAbFcF87kyqjhNu");
 
+#[error_code]
+pub enum CustomError {
+    #[msg("Insufficient Funds")]
+    InsufficientFundsForTransaction,
+}
+
 #[program]
 mod coinflip_bet {
-    use anchor_lang::solana_program::{system_instruction, program::invoke_signed};
+    use anchor_lang::solana_program::{program::invoke_signed, system_instruction};
 
     use super::*;
 
     #[access_control(ctx.accounts.validate())]
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        let ix = system_instruction::transfer(&ctx.accounts.user.key(), &ctx.accounts.wager.key(), 1000);
+        msg!("{}", ctx.accounts.wager.key());
+        let ix = system_instruction::transfer(&ctx.accounts.user.key(), &ctx.accounts.wager.key(), 100);
         invoke_signed(
-          &ix,
-          &[ctx.accounts.user.to_account_info(), ctx.accounts.system_program.to_account_info()],
-          &[]
-          // &[&[ctx.accounts.user.key.to_bytes().as_ref(), ctx.accounts.system_program.key.to_bytes().as_ref()]]
+            &ix,
+            &[ctx.accounts.user.to_account_info()],
+            &[&[ctx.accounts.user.key.to_bytes().as_ref()]]
         )?;
+        // let amount = 1000;
+        // if **ctx.accounts.user.try_borrow_lamports()? < amount {
+        //     return Err(anchor_lang::error!(CustomError::InsufficientFundsForTransaction));
+        // }
+        // **ctx.accounts.user.try_borrow_mut_lamports()? -= amount;
+        // **ctx.accounts.wager.to_account_info().try_borrow_mut_lamports()? += amount;
         Ok(())
     }
 
