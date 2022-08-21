@@ -5,7 +5,8 @@
   "author": "5elfle5",
   "license": "ISC",
   "scripts": {
-    "start": "ts-node src/main.ts",
+    "topup": "ts-node src/topup.ts",
+    "init": "ts-node src/init-system-wager.ts",
     "start-with-test-validator": "start-server-and-test 'solana-test-validator --reset --quiet' http://localhost:8899/health start",
     "lint": "eslint --ext .ts src/client/* && prettier --check \"src/client/**/*.ts\"",
     "lint:fix": "eslint --ext .ts src/client/* --fix && prettier --write \"src/client/**/*.ts\"",
