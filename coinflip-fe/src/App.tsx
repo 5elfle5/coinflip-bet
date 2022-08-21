@@ -14,13 +14,13 @@ async function getRoll(program: anchor.Program<anchor.Idl>, flipResult: Keypair)
     return account.roll.words[0];
 }
 
-async function initialize(
+async function bet(
   publicKey: PublicKey,
   program: anchor.Program<anchor.Idl>,
   flipResult: Keypair,
 ): Promise<any> {
-  await program.methods.initialize(
-    new anchor.BN(1234),
+  await program.methods.bet(
+    "heads",
   )
   .accounts(
     {
@@ -76,9 +76,9 @@ const WalletContent: FC = () => {
     const program = new anchor.Program(IDL, programId, provider);
     return program;
   }, [connection])
-  const transact = async () => {
+  const bet = async () => {
     if (!publicKey) return;
-    await initialize(publicKey, program, flipResult);
+    await bet(publicKey, program, flipResult);
   };
   const result = async () => {
     if (!publicKey) return;
@@ -89,7 +89,7 @@ const WalletContent: FC = () => {
     <>
       roll: {roll}
       <WalletMultiButton />
-      <button onClick={transact}>Transact!</button>
+      <button onClick={bet}>Bet!</button>
       <button onClick={result}>Get Thing!</button>
     </>
   )
