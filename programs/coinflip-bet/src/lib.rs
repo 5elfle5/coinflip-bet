@@ -13,25 +13,10 @@ pub enum CustomError {
 
 #[program]
 mod coinflip_bet {
-    use anchor_lang::solana_program::{program::invoke_signed, system_instruction};
-
     use super::*;
 
     #[access_control(ctx.accounts.validate())]
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        msg!("{}", ctx.accounts.wager.key());
-        let ix = system_instruction::transfer(&ctx.accounts.user.key(), &ctx.accounts.wager.key(), 100);
-        invoke_signed(
-            &ix,
-            &[ctx.accounts.user.to_account_info()],
-            &[&[ctx.accounts.user.key.to_bytes().as_ref()]]
-        )?;
-        // let amount = 1000;
-        // if **ctx.accounts.user.try_borrow_lamports()? < amount {
-        //     return Err(anchor_lang::error!(CustomError::InsufficientFundsForTransaction));
-        // }
-        // **ctx.accounts.user.try_borrow_mut_lamports()? -= amount;
-        // **ctx.accounts.wager.to_account_info().try_borrow_mut_lamports()? += amount;
         Ok(())
     }
 
