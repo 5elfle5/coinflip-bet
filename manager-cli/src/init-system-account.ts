@@ -7,8 +7,11 @@ require('dotenv').config();
 async function run() {
   const connection = new Connection('http://127.0.0.1:8899');
   const wallet = NodeWallet.local();
-  const programId = new PublicKey("4SmSWTXY3MXgXW35rRfvfgEpZLASPeAbFcF87kyqjhNu");
-  const [wagerPubkey,] = await PublicKey.findProgramAddress([Buffer.from("wager"), wallet.publicKey.toBuffer()], programId);
+  const programId = new PublicKey("Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2");
+  const [systemAccount,] = await PublicKey.findProgramAddress(
+    [Buffer.from("system-account"), wallet.publicKey.toBuffer()],
+    SystemProgram.programId
+  );
 
   const provider = new anchor.AnchorProvider(
     connection,
@@ -18,12 +21,12 @@ async function run() {
   );
   // @ts-ignore
   const program = new anchor.Program(IDL, programId, provider);
-  console.log(`wager ${wagerPubkey}; wallet ${wallet.publicKey}`);
-  await program.methods.initialize()
+  console.log(`wager ${systemAccount}; wallet ${wallet.publicKey}`);
+  await program.methods.initSystem()
   .accounts(
     {
-      wager: wagerPubkey,
-      user: wallet.publicKey,
+      systemAccount,
+      manager: wallet.publicKey,
       systemProgram: SystemProgram.programId,
     }
   )

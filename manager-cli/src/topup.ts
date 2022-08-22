@@ -5,7 +5,7 @@ require('dotenv').config();
 async function main() {
   const connection = new Connection('http://127.0.0.1:8899');
   const wallet = NodeWallet.local();
-  const programId = new PublicKey("4SmSWTXY3MXgXW35rRfvfgEpZLASPeAbFcF87kyqjhNu");
+  const programId = new PublicKey("Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2");
   const [wagerPubkey,] = await PublicKey.findProgramAddress([Buffer.from("wager"), wallet.publicKey.toBuffer()], programId);
   const transferTransaction = new Transaction().add(
     SystemProgram.transfer({
