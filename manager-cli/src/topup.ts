@@ -1,11 +1,12 @@
 import NodeWallet from '@project-serum/anchor/dist/cjs/nodewallet';
 import { Connection, PublicKey, sendAndConfirmTransaction, SystemProgram, Transaction } from '@solana/web3.js';
 require('dotenv').config();
+const PROGRAM_ID = process.env.PROGRAM_ID ?? '';
   
 async function main() {
   const connection = new Connection('http://127.0.0.1:8899');
   const wallet = NodeWallet.local();
-  const programId = new PublicKey("Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2");
+  const programId = new PublicKey(PROGRAM_ID);
   const [wagerPubkey,] = await PublicKey.findProgramAddress([Buffer.from("wager"), wallet.publicKey.toBuffer()], programId);
   const transferTransaction = new Transaction().add(
     SystemProgram.transfer({

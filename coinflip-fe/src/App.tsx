@@ -7,6 +7,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { Keypair, SystemProgram } from '@solana/web3.js';
 import * as anchor from "@project-serum/anchor";
 import * as IDL from '../../target/idl/coinflip_bet.json';
+import { PROGRAM_ID } from './const';
 
 async function getRoll(program: anchor.Program<anchor.Idl>, flipResult: Keypair): Promise<any> {
     const account = await program.account.flipResult.fetch(flipResult.publicKey);
@@ -71,7 +72,7 @@ const WalletContent: FC = () => {
       wallet,
       anchor.AnchorProvider.defaultOptions()
     );
-    const programId = new PublicKey("Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2");
+    const programId = new PublicKey(PROGRAM_ID);
     // @ts-ignore
     const program = new anchor.Program(IDL, programId, provider);
     return program;

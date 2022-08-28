@@ -3,11 +3,12 @@ import { Connection, LAMPORTS_PER_SOL, PublicKey, sendAndConfirmTransaction, Sys
 import * as IDL from '../../target/idl/coinflip_bet.json';
 import * as anchor from "@project-serum/anchor";
 require('dotenv').config();
+const PROGRAM_ID = process.env.PROGRAM_ID ?? '';
   
 async function run() {
   const connection = new Connection('http://127.0.0.1:8899');
   const wallet = NodeWallet.local();
-  const programId = new PublicKey("Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2");
+  const programId = new PublicKey(PROGRAM_ID);
   const [systemAccount,] = await PublicKey.findProgramAddress(
     [Buffer.from("system-account"), wallet.publicKey.toBuffer()],
     SystemProgram.programId
