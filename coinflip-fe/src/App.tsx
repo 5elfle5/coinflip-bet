@@ -1,6 +1,6 @@
 import { ConnectionProvider, useConnection, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { PhantomWalletAdapter, PhantomWalletAdapterConfig } from '@solana/wallet-adapter-wallets';
 import { PublicKey } from '@solana/web3.js';
 import React, { FC, ReactNode, useMemo, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -9,30 +9,41 @@ import * as anchor from "@project-serum/anchor";
 import * as IDL from '../../target/idl/coinflip_bet.json';
 import { PROGRAM_ID } from './const';
 
-async function getRoll(program: anchor.Program<anchor.Idl>, flipResult: Keypair): Promise<any> {
-    const account = await program.account.flipResult.fetch(flipResult.publicKey);
-    // @ts-ignore
-    return account.roll.words[0];
+async function getRoll(program: anchor.Program<anchor.Idl>, userPk: PublicKey): Promise<any> {
+  const [wager,] = await PublicKey.findProgramAddress(
+    [Buffer.from('wager'), userPk.toBuffer()],
+    program.programId,
+  );
+  const account = await program.account.wager.fetch(wager);
+  // @ts-ignore
+  return account.roll.words[0];
 }
 
-async function bet(
+async function runBet(
   publicKey: PublicKey,
   program: anchor.Program<anchor.Idl>,
-  flipResult: Keypair,
 ): Promise<any> {
+  const managerPk = new PublicKey('Wj2yvieAgeD4bXdAzkVTYiqDgA8ScJM2JPpayDaCfcx');
+  const [systemAccount,] = await PublicKey.findProgramAddress(
+    [Buffer.from('system-account'), managerPk.toBuffer()],
+    program.programId,
+  );
+  const [wager,] = await PublicKey.findProgramAddress(
+    [Buffer.from('wager'), publicKey.toBuffer()],
+    program.programId,
+  );
   await program.methods.bet(
-    "heads",
+    { side: 'heads', lamports: new anchor.BN(1000) },
   )
   .accounts(
     {
-      flipResult: flipResult.publicKey,
+      wager,
       user: publicKey,
+      systemAccount,
       systemProgram: SystemProgram.programId,
     }
   )
-  .signers(
-    [flipResult]
-  )
+  .signers([])
   .rpc();
 }
 
@@ -62,7 +73,6 @@ const WalletContent: FC = () => {
   const { publicKey, } = useWallet();
   const { connection } = useConnection();
   const [roll, setRoll] = useState(0);
-  const flipResult = useMemo(() => anchor.web3.Keypair.generate(), []);
   const program = useMemo(() => {
     const wallet = new PhantomWalletAdapter();
     wallet.connect();
@@ -79,11 +89,11 @@ const WalletContent: FC = () => {
   }, [connection])
   const bet = async () => {
     if (!publicKey) return;
-    await bet(publicKey, program, flipResult);
+    await runBet(publicKey, program);
   };
   const result = async () => {
     if (!publicKey) return;
-    const thing = await getRoll(program, flipResult);
+    const thing = await getRoll(program, publicKey);
     setRoll(thing);
   };
   return (
