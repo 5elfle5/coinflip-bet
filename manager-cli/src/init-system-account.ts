@@ -11,7 +11,7 @@ async function run() {
   const programId = new PublicKey(PROGRAM_ID);
   const [systemAccount,] = await PublicKey.findProgramAddress(
     [Buffer.from("system-account"), wallet.publicKey.toBuffer()],
-    SystemProgram.programId
+    programId
   );
 
   const provider = new anchor.AnchorProvider(

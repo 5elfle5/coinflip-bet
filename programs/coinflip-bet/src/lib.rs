@@ -3,7 +3,7 @@ use vipers::prelude::*;
 
 mod account_validators;
 
-declare_id!("Ae1cbcDnNocF6yUSzMTr4wsMZDwhkj8sHfnM9ScYASn2");
+declare_id!("6YQukxVDKejG79RNSddyeEy6YQRVNkXSi4f5HuEyVMd6");
 
 #[error_code]
 pub enum CustomError {
