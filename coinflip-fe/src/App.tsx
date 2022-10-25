@@ -1,51 +1,13 @@
 import { ConnectionProvider, useConnection, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { PhantomWalletAdapter, PhantomWalletAdapterConfig } from '@solana/wallet-adapter-wallets';
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { PublicKey } from '@solana/web3.js';
 import React, { FC, ReactNode, useMemo, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { Keypair, SystemProgram } from '@solana/web3.js';
 import * as anchor from "@project-serum/anchor";
 import * as IDL from '../../target/idl/coinflip_bet.json';
 import { PROGRAM_ID } from './const';
-
-async function getRoll(program: anchor.Program<anchor.Idl>, userPk: PublicKey): Promise<any> {
-  const [wager,] = await PublicKey.findProgramAddress(
-    [Buffer.from('wager'), userPk.toBuffer()],
-    program.programId,
-  );
-  const account = await program.account.wager.fetch(wager);
-  // @ts-ignore
-  return account.roll.words[0];
-}
-
-async function runBet(
-  publicKey: PublicKey,
-  program: anchor.Program<anchor.Idl>,
-): Promise<any> {
-  const managerPk = new PublicKey('Wj2yvieAgeD4bXdAzkVTYiqDgA8ScJM2JPpayDaCfcx');
-  const [systemAccount,] = await PublicKey.findProgramAddress(
-    [Buffer.from('system-account'), managerPk.toBuffer()],
-    program.programId,
-  );
-  const [wager,] = await PublicKey.findProgramAddress(
-    [Buffer.from('wager'), publicKey.toBuffer()],
-    program.programId,
-  );
-  await program.methods.bet(
-    { side: 'heads', lamports: new anchor.BN(1000) },
-  )
-  .accounts(
-    {
-      wager,
-      user: publicKey,
-      systemAccount,
-      systemProgram: SystemProgram.programId,
-    }
-  )
-  .signers([])
-  .rpc();
-}
+import { getRoll, runBet } from './instructions';
 
 export const App: FC = () => {
   return (

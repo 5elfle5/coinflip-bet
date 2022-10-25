@@ -6,5 +6,6 @@ target
 node_modules
 test-ledger
 .yarn
+.env
 
 yarn.lock
