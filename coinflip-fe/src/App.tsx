@@ -4,10 +4,10 @@ import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { PublicKey } from '@solana/web3.js';
 import React, { FC, ReactNode, useMemo, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import * as anchor from "@project-serum/anchor";
 import * as IDL from '../../target/idl/coinflip_bet.json';
 import { PROGRAM_ID } from './const';
 import { getRoll, runBet } from './instructions';
+import { AnchorProvider, Program } from '@project-serum/anchor';
 
 export const App: FC = () => {
   return (
@@ -38,15 +38,15 @@ const WalletContent: FC = () => {
   const program = useMemo(() => {
     const wallet = new PhantomWalletAdapter();
     wallet.connect();
-    const provider = new anchor.AnchorProvider(
+    const provider = new AnchorProvider(
       connection,
       // @ts-ignore
       wallet,
-      anchor.AnchorProvider.defaultOptions()
+      AnchorProvider.defaultOptions()
     );
     const programId = new PublicKey(PROGRAM_ID);
     // @ts-ignore
-    const program = new anchor.Program(IDL, programId, provider);
+    const program = new Program(IDL, programId, provider);
     return program;
   }, [connection])
   const bet = async () => {
