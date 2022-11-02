@@ -1,5 +1,6 @@
 
 .anchor
+.idea
 .DS_Store
 target
 **/*.rs.bk
