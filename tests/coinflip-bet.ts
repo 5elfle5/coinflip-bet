@@ -26,9 +26,16 @@ describe("coinflip-bet", () => {
     const programId = new PublicKey(PROGRAM_ID);
     //@ts-ignore
     const program = new Program(IDL, programId, provider);
-    // const program = workspace.CoinflipBet;
-    const userKeys = Keypair.generate();
+    const connection = new Connection('http://127.0.0.1:8899');
     const managerKeys = Keypair.fromSecretKey(new Uint8Array(JSON.parse(MANAGER)));
+    console.log(9);
+    const airdropSignature = await connection.requestAirdrop(
+      managerKeys.publicKey,
+      100000000
+    );
+    console.log(8);
+    await connection.confirmTransaction(airdropSignature);
+    console.log(1);
     const [systemAccount,] = await PublicKey.findProgramAddress(
       [Buffer.from("system-account"), managerKeys.publicKey.toBuffer()],
       program.programId
@@ -45,57 +52,16 @@ describe("coinflip-bet", () => {
       [managerKeys]
     )
     .rpc();
-    // await program.rpc.initSystem({
-    //   accounts: {
-    //     systemAccount,
-    //     manager: managerKeys.publicKey,
-    //     systemProgram: SystemProgram.programId,
-    //   },
-    //   signers: [managerKeys],
-    // });
+    console.log(2);
     const tx = new Transaction().add(
       SystemProgram.transfer({
         fromPubkey: managerKeys.publicKey,
         toPubkey: systemAccount,
         lamports: 100000,
       }),
-      // SystemProgram.transfer({
-      //   fromPubkey: managerKeys.publicKey,
-      //   toPubkey: userKeys.publicKey,
-      //   lamports: 100000,
-      // }),
     );
-    let connection = new Connection('http://127.0.0.1:8899');
     await sendAndConfirmTransaction(connection, tx, [managerKeys]);
+    console.log(3);
 
-    // const [wager,] = await PublicKey.findProgramAddress(
-    //   [Buffer.from('wager'), userKeys.publicKey.toBuffer()],
-    //   program.programId,
-    // );
-    // const betArgs = {
-    //   side: 'heads',
-    //   lamports: new BN(1000),
-    // }
-    // await program.rpc.bet(betArgs, {
-    //   accounts: {
-    //     wager,
-    //     user: userKeys.publicKey,
-    //     systemAccount,
-    //     systemProgram: SystemProgram.programId,
-    //   },
-    //   signers: [userKeys]
-    // });
-
-    // const flipResult = _flipResult;
-    // const program = workspace.CoinflipBet;
-    // await program.rpc.update({
-    //   accounts: {
-    //     flipResult: flipResult.publicKey,
-    //   },
-    // });
-    // const account = await program.account.flipResult.fetch(flipResult.publicKey);
-    // console.log("account data");
-    // console.log(account.roll);
-    // console.log(account.won);
   });
 });
