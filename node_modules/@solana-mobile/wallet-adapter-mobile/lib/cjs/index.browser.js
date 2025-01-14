@@ -1,0 +1,1365 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var walletAdapterBase = require('@solana/wallet-adapter-base');
+var web3_js = require('@solana/web3.js');
+var mobileWalletAdapterProtocolWeb3js = require('@solana-mobile/mobile-wallet-adapter-protocol-web3js');
+var QRCode = require('qrcode');
+var jsBase64 = require('js-base64');
+
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var QRCode__default = /*#__PURE__*/_interopDefaultLegacy(QRCode);
+
+/******************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+
+function __awaiter(thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+}
+
+function toUint8Array(base64EncodedByteArray) {
+    return new Uint8Array(window
+        .atob(base64EncodedByteArray)
+        .split('')
+        .map((c) => c.charCodeAt(0)));
+}
+
+function getIsSupported$1() {
+    return (typeof window !== 'undefined' &&
+        window.isSecureContext &&
+        typeof document !== 'undefined' &&
+        /android/i.test(navigator.userAgent));
+}
+
+const SolanaMobileWalletAdapterWalletName = 'Mobile Wallet Adapter';
+const SIGNATURE_LENGTH_IN_BYTES$1 = 64;
+function getPublicKeyFromAddress$1(address) {
+    const publicKeyByteArray = toUint8Array(address);
+    return new web3_js.PublicKey(publicKeyByteArray);
+}
+function isVersionedTransaction(transaction) {
+    return 'version' in transaction;
+}
+function clusterToChainId(cluster) {
+    switch (cluster) {
+        case 'mainnet-beta':
+            return 'solana:mainnet';
+        case 'testnet':
+            return 'solana:testnet';
+        case 'devnet':
+            return 'solana:devnet';
+    }
+}
+class SolanaMobileWalletAdapter extends walletAdapterBase.BaseSignInMessageSignerWalletAdapter {
+    constructor(config) {
+        var _a;
+        super();
+        this.supportedTransactionVersions = new Set(
+        // FIXME(#244): We can't actually know what versions are supported until we know which wallet we're talking to.
+        ['legacy', 0]);
+        this.name = SolanaMobileWalletAdapterWalletName;
+        this.url = 'https://solanamobile.com/wallets';
+        this.icon = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI4IiB3aWR0aD0iMjgiIHZpZXdCb3g9Ii0zIDAgMjggMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0iI0RDQjhGRiI+PHBhdGggZD0iTTE3LjQgMTcuNEgxNXYyLjRoMi40di0yLjRabTEuMi05LjZoLTIuNHYyLjRoMi40VjcuOFoiLz48cGF0aCBkPSJNMjEuNiAzVjBoLTIuNHYzaC0zLjZWMGgtMi40djNoLTIuNHY2LjZINC41YTIuMSAyLjEgMCAxIDEgMC00LjJoMi43VjNINC41QTQuNSA0LjUgMCAwIDAgMCA3LjVWMjRoMjEuNnYtNi42aC0yLjR2NC4ySDIuNFYxMS41Yy41LjMgMS4yLjQgMS44LjVoNy41QTYuNiA2LjYgMCAwIDAgMjQgOVYzaC0yLjRabTAgNS43YTQuMiA0LjIgMCAxIDEtOC40IDBWNS40aDguNHYzLjNaIi8+PC9nPjwvc3ZnPg==';
+        this._connecting = false;
+        /**
+         * Every time the connection is recycled in some way (eg. `disconnect()` is called)
+         * increment this and use it to make sure that `transact` calls from the previous
+         * 'generation' don't continue to do work and throw exceptions.
+         */
+        this._connectionGeneration = 0;
+        this._readyState = getIsSupported$1() ? walletAdapterBase.WalletReadyState.Loadable : walletAdapterBase.WalletReadyState.Unsupported;
+        this._authorizationResultCache = config.authorizationResultCache;
+        this._addressSelector = config.addressSelector;
+        this._appIdentity = config.appIdentity;
+        this._chain = (_a = config.chain) !== null && _a !== void 0 ? _a : clusterToChainId(config.cluster);
+        this._hostAuthority = config.remoteHostAuthority;
+        this._onWalletNotFound = config.onWalletNotFound;
+        if (this._readyState !== walletAdapterBase.WalletReadyState.Unsupported) {
+            this._authorizationResultCache.get().then((authorizationResult) => {
+                if (authorizationResult) {
+                    // Having a prior authorization result is, right now, the best
+                    // indication that a mobile wallet is installed. There is no API
+                    // we can use to test for whether the association URI is supported.
+                    this.declareWalletAsInstalled();
+                }
+            });
+        }
+    }
+    get publicKey() {
+        if (this._publicKey == null && this._selectedAddress != null) {
+            try {
+                this._publicKey = getPublicKeyFromAddress$1(this._selectedAddress);
+            }
+            catch (e) {
+                throw new walletAdapterBase.WalletPublicKeyError((e instanceof Error && (e === null || e === void 0 ? void 0 : e.message)) || 'Unknown error', e);
+            }
+        }
+        return this._publicKey ? this._publicKey : null;
+    }
+    get connected() {
+        return !!this._authorizationResult;
+    }
+    get connecting() {
+        return this._connecting;
+    }
+    get readyState() {
+        return this._readyState;
+    }
+    declareWalletAsInstalled() {
+        if (this._readyState !== walletAdapterBase.WalletReadyState.Installed) {
+            this.emit('readyStateChange', (this._readyState = walletAdapterBase.WalletReadyState.Installed));
+        }
+    }
+    runWithGuard(callback) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                return yield callback();
+            }
+            catch (e) {
+                this.emit('error', e);
+                throw e;
+            }
+        });
+    }
+    /** @deprecated Use `autoConnect()` instead. */
+    autoConnect_DO_NOT_USE_OR_YOU_WILL_BE_FIRED() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.autoConnect();
+        });
+    }
+    autoConnect() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.connecting || this.connected) {
+                return;
+            }
+            return yield this.runWithGuard(() => __awaiter(this, void 0, void 0, function* () {
+                if (this._readyState !== walletAdapterBase.WalletReadyState.Installed && this._readyState !== walletAdapterBase.WalletReadyState.Loadable) {
+                    throw new walletAdapterBase.WalletNotReadyError();
+                }
+                this._connecting = true;
+                try {
+                    const cachedAuthorizationResult = yield this._authorizationResultCache.get();
+                    if (cachedAuthorizationResult) {
+                        // TODO: Evaluate whether there's any threat to not `awaiting` this expression
+                        this.handleAuthorizationResult(cachedAuthorizationResult);
+                    }
+                }
+                catch (e) {
+                    throw new walletAdapterBase.WalletConnectionError((e instanceof Error && e.message) || 'Unknown error', e);
+                }
+                finally {
+                    this._connecting = false;
+                }
+            }));
+        });
+    }
+    connect() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.connecting || this.connected) {
+                return;
+            }
+            return yield this.runWithGuard(() => __awaiter(this, void 0, void 0, function* () {
+                if (this._readyState !== walletAdapterBase.WalletReadyState.Installed && this._readyState !== walletAdapterBase.WalletReadyState.Loadable) {
+                    throw new walletAdapterBase.WalletNotReadyError();
+                }
+                this._connecting = true;
+                try {
+                    yield this.performAuthorization();
+                }
+                catch (e) {
+                    throw new walletAdapterBase.WalletConnectionError((e instanceof Error && e.message) || 'Unknown error', e);
+                }
+                finally {
+                    this._connecting = false;
+                }
+            }));
+        });
+    }
+    performAuthorization(signInPayload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const cachedAuthorizationResult = yield this._authorizationResultCache.get();
+                if (cachedAuthorizationResult) {
+                    // TODO: Evaluate whether there's any threat to not `awaiting` this expression
+                    this.handleAuthorizationResult(cachedAuthorizationResult);
+                    return cachedAuthorizationResult;
+                }
+                return yield this.transact((wallet) => __awaiter(this, void 0, void 0, function* () {
+                    const authorizationResult = yield wallet.authorize({
+                        chain: this._chain,
+                        identity: this._appIdentity,
+                        sign_in_payload: signInPayload,
+                    });
+                    // TODO: Evaluate whether there's any threat to not `awaiting` this expression
+                    Promise.all([
+                        this._authorizationResultCache.set(authorizationResult),
+                        this.handleAuthorizationResult(authorizationResult),
+                    ]);
+                    return authorizationResult;
+                }));
+            }
+            catch (e) {
+                throw new walletAdapterBase.WalletConnectionError((e instanceof Error && e.message) || 'Unknown error', e);
+            }
+        });
+    }
+    handleAuthorizationResult(authorizationResult) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            const didPublicKeysChange = 
+            // Case 1: We started from having no authorization.
+            this._authorizationResult == null ||
+                // Case 2: The number of authorized accounts changed.
+                ((_a = this._authorizationResult) === null || _a === void 0 ? void 0 : _a.accounts.length) !== authorizationResult.accounts.length ||
+                // Case 3: The new list of addresses isn't exactly the same as the old list, in the same order.
+                this._authorizationResult.accounts.some((account, ii) => account.address !== authorizationResult.accounts[ii].address);
+            this._authorizationResult = authorizationResult;
+            this.declareWalletAsInstalled();
+            if (didPublicKeysChange) {
+                const nextSelectedAddress = yield this._addressSelector.select(authorizationResult.accounts.map(({ address }) => address));
+                if (nextSelectedAddress !== this._selectedAddress) {
+                    this._selectedAddress = nextSelectedAddress;
+                    delete this._publicKey;
+                    this.emit('connect', 
+                    // Having just set `this._selectedAddress`, `this.publicKey` is definitely non-null
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    this.publicKey);
+                }
+            }
+        });
+    }
+    performReauthorization(wallet, authToken) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const authorizationResult = yield wallet.authorize({
+                    auth_token: authToken,
+                    identity: this._appIdentity,
+                });
+                // TODO: Evaluate whether there's any threat to not `awaiting` this expression
+                Promise.all([
+                    this._authorizationResultCache.set(authorizationResult),
+                    this.handleAuthorizationResult(authorizationResult),
+                ]);
+            }
+            catch (e) {
+                this.disconnect();
+                throw new walletAdapterBase.WalletDisconnectedError((e instanceof Error && (e === null || e === void 0 ? void 0 : e.message)) || 'Unknown error', e);
+            }
+        });
+    }
+    disconnect() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this._authorizationResultCache.clear(); // TODO: Evaluate whether there's any threat to not `awaiting` this expression
+            this._connecting = false;
+            this._connectionGeneration++;
+            delete this._authorizationResult;
+            delete this._publicKey;
+            delete this._selectedAddress;
+            this.emit('disconnect');
+        });
+    }
+    transact(callback) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            const walletUriBase = (_a = this._authorizationResult) === null || _a === void 0 ? void 0 : _a.wallet_uri_base;
+            const config = walletUriBase ? { baseUri: walletUriBase } : undefined;
+            const remoteConfig = this._hostAuthority ? { remoteHostAuthority: this._hostAuthority } : undefined;
+            const currentConnectionGeneration = this._connectionGeneration;
+            try {
+                return yield mobileWalletAdapterProtocolWeb3js.transact(callback, Object.assign(Object.assign({}, config), remoteConfig));
+            }
+            catch (e) {
+                if (this._connectionGeneration !== currentConnectionGeneration) {
+                    yield new Promise(() => { }); // Never resolve.
+                }
+                if (e instanceof Error &&
+                    e.name === 'SolanaMobileWalletAdapterError' &&
+                    e.code === 'ERROR_WALLET_NOT_FOUND') {
+                    yield this._onWalletNotFound(this);
+                }
+                throw e;
+            }
+        });
+    }
+    assertIsAuthorized() {
+        if (!this._authorizationResult || !this._selectedAddress)
+            throw new walletAdapterBase.WalletNotConnectedError();
+        return {
+            authToken: this._authorizationResult.auth_token,
+            selectedAddress: this._selectedAddress,
+        };
+    }
+    performSignTransactions(transactions) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { authToken } = this.assertIsAuthorized();
+            try {
+                return yield this.transact((wallet) => __awaiter(this, void 0, void 0, function* () {
+                    yield this.performReauthorization(wallet, authToken);
+                    const signedTransactions = yield wallet.signTransactions({
+                        transactions,
+                    });
+                    return signedTransactions;
+                }));
+            }
+            catch (error) {
+                throw new walletAdapterBase.WalletSignTransactionError(error === null || error === void 0 ? void 0 : error.message, error);
+            }
+        });
+    }
+    sendTransaction(transaction, connection, options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.runWithGuard(() => __awaiter(this, void 0, void 0, function* () {
+                const { authToken } = this.assertIsAuthorized();
+                const minContextSlot = options === null || options === void 0 ? void 0 : options.minContextSlot;
+                try {
+                    return yield this.transact((wallet) => __awaiter(this, void 0, void 0, function* () {
+                        function getTargetCommitment() {
+                            let targetCommitment;
+                            switch (connection.commitment) {
+                                case 'confirmed':
+                                case 'finalized':
+                                case 'processed':
+                                    targetCommitment = connection.commitment;
+                                    break;
+                                default:
+                                    targetCommitment = 'finalized';
+                            }
+                            let targetPreflightCommitment;
+                            switch (options === null || options === void 0 ? void 0 : options.preflightCommitment) {
+                                case 'confirmed':
+                                case 'finalized':
+                                case 'processed':
+                                    targetPreflightCommitment = options.preflightCommitment;
+                                    break;
+                                case undefined:
+                                    targetPreflightCommitment = targetCommitment;
+                                    break;
+                                default:
+                                    targetPreflightCommitment = 'finalized';
+                            }
+                            const preflightCommitmentScore = targetPreflightCommitment === 'finalized'
+                                ? 2
+                                : targetPreflightCommitment === 'confirmed'
+                                    ? 1
+                                    : 0;
+                            const targetCommitmentScore = targetCommitment === 'finalized' ? 2 : targetCommitment === 'confirmed' ? 1 : 0;
+                            return preflightCommitmentScore < targetCommitmentScore
+                                ? targetPreflightCommitment
+                                : targetCommitment;
+                        }
+                        const [capabilities, _1, _2] = yield Promise.all([
+                            wallet.getCapabilities(),
+                            this.performReauthorization(wallet, authToken),
+                            isVersionedTransaction(transaction)
+                                ? null
+                                : /**
+                                   * Unlike versioned transactions, legacy `Transaction` objects
+                                   * may not have an associated `feePayer` or `recentBlockhash`.
+                                   * This code exists to patch them up in case they are missing.
+                                   */
+                                    (() => __awaiter(this, void 0, void 0, function* () {
+                                        var _a;
+                                        transaction.feePayer || (transaction.feePayer = (_a = this.publicKey) !== null && _a !== void 0 ? _a : undefined);
+                                        if (transaction.recentBlockhash == null) {
+                                            const { blockhash } = yield connection.getLatestBlockhash({
+                                                commitment: getTargetCommitment(),
+                                            });
+                                            transaction.recentBlockhash = blockhash;
+                                        }
+                                    }))(),
+                        ]);
+                        if (capabilities.supports_sign_and_send_transactions) {
+                            const signatures = yield wallet.signAndSendTransactions({
+                                minContextSlot,
+                                transactions: [transaction],
+                            });
+                            return signatures[0];
+                        }
+                        else {
+                            const [signedTransaction] = yield wallet.signTransactions({
+                                transactions: [transaction],
+                            });
+                            if (isVersionedTransaction(signedTransaction)) {
+                                return yield connection.sendTransaction(signedTransaction);
+                            }
+                            else {
+                                const serializedTransaction = signedTransaction.serialize();
+                                return yield connection.sendRawTransaction(serializedTransaction, Object.assign(Object.assign({}, options), { preflightCommitment: getTargetCommitment() }));
+                            }
+                        }
+                    }));
+                }
+                catch (error) {
+                    throw new walletAdapterBase.WalletSendTransactionError(error === null || error === void 0 ? void 0 : error.message, error);
+                }
+            }));
+        });
+    }
+    signTransaction(transaction) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.runWithGuard(() => __awaiter(this, void 0, void 0, function* () {
+                const [signedTransaction] = yield this.performSignTransactions([transaction]);
+                return signedTransaction;
+            }));
+        });
+    }
+    signAllTransactions(transactions) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.runWithGuard(() => __awaiter(this, void 0, void 0, function* () {
+                const signedTransactions = yield this.performSignTransactions(transactions);
+                return signedTransactions;
+            }));
+        });
+    }
+    signMessage(message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.runWithGuard(() => __awaiter(this, void 0, void 0, function* () {
+                const { authToken, selectedAddress } = this.assertIsAuthorized();
+                try {
+                    return yield this.transact((wallet) => __awaiter(this, void 0, void 0, function* () {
+                        yield this.performReauthorization(wallet, authToken);
+                        const [signedMessage] = yield wallet.signMessages({
+                            addresses: [selectedAddress],
+                            payloads: [message],
+                        });
+                        const signature = signedMessage.slice(-SIGNATURE_LENGTH_IN_BYTES$1);
+                        return signature;
+                    }));
+                }
+                catch (error) {
+                    throw new walletAdapterBase.WalletSignMessageError(error === null || error === void 0 ? void 0 : error.message, error);
+                }
+            }));
+        });
+    }
+    signIn(input) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.runWithGuard(() => __awaiter(this, void 0, void 0, function* () {
+                var _a, _b;
+                if (this._readyState !== walletAdapterBase.WalletReadyState.Installed && this._readyState !== walletAdapterBase.WalletReadyState.Loadable) {
+                    throw new walletAdapterBase.WalletNotReadyError();
+                }
+                this._connecting = true;
+                try {
+                    const authorizationResult = yield this.performAuthorization(Object.assign(Object.assign({}, input), { domain: (_a = input === null || input === void 0 ? void 0 : input.domain) !== null && _a !== void 0 ? _a : window.location.host }));
+                    if (!authorizationResult.sign_in_result) {
+                        throw new Error("Sign in failed, no sign in result returned by wallet");
+                    }
+                    const signedInAddress = authorizationResult.sign_in_result.address;
+                    const signedInAccount = Object.assign(Object.assign({}, (_b = authorizationResult.accounts.find(acc => acc.address == signedInAddress)) !== null && _b !== void 0 ? _b : {
+                        address: signedInAddress
+                    }), { publicKey: toUint8Array(signedInAddress) });
+                    return {
+                        account: signedInAccount,
+                        signedMessage: toUint8Array(authorizationResult.sign_in_result.signed_message),
+                        signature: toUint8Array(authorizationResult.sign_in_result.signature)
+                    };
+                }
+                catch (e) {
+                    throw new walletAdapterBase.WalletConnectionError((e instanceof Error && e.message) || 'Unknown error', e);
+                }
+                finally {
+                    this._connecting = false;
+                }
+            }));
+        });
+    }
+}
+
+const BluetoothHtml = `
+    <div class="mobile-wallet-adapter-embedded-modal-content">
+    <button id="mobile-wallet-adapter-embedded-modal-close" class="mobile-wallet-adapter-embedded-modal-close">
+        <svg width="14" height="14">
+        <path d="M14 12.461 8.3 6.772l5.234-5.233L12.006 0 6.772 5.234 1.54 0 0 1.539l5.234 5.233L0 12.006l1.539 1.528L6.772 8.3l5.69 5.7L14 12.461z" />
+        </svg>
+    </button>
+    <h1><b>Jupiter</b> wants to connect</h1>
+    <p class="mobile-wallet-adapter-embedded-modal-subtitle">Connect to your mobile wallet app through Bluetooth.</p>
+    <div class="mobile-wallet-adapter-embedded-modal-connection-status-container">
+        <div id="status-not-connected" class="connection-status">
+        <svg class="bluetooth-icon" width="24" height="24" viewBox="0 0 24 24">
+            <path fill="#a0a0a0" d="M14.24 12.01l2.32 2.32c.28-.72.44-1.51.44-2.33 0-.82-.16-1.59-.43-2.31l-2.33 2.32zm5.29-5.3l-1.26 1.26c.63 1.21.98 2.57.98 4.02s-.36 2.82-.98 4.02l1.2 1.2c.97-1.54 1.54-3.36 1.54-5.31-.01-1.89-.55-3.67-1.48-5.19zm-3.82 1L10 2H9v7.59L4.41 5 3 6.41 8.59 12 3 17.59 4.41 19 9 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM11 5.83l1.88 1.88L11 9.59V5.83zm1.88 10.46L11 18.17v-3.76l1.88 1.88z"/>
+        </svg>
+        <p>Not connected</p>
+        </div>
+        <div id="status-connecting" class="connection-status" style="display:none;">
+        <div class="spinner"></div>
+        <p>Connecting...</p>
+        </div>
+        <div id="status-connected" class="connection-status" style="display:none;">
+        <svg class="checkmark-icon" width="24" height="24" viewBox="0 0 24 24">
+            <path fill="#4CAF50" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </svg>
+        <p>Connected</p>
+        </div>
+    </div>
+    <div class="button-group">
+        <button id="cancel-btn" class="cancel-btn">Cancel</button>
+        <button id="connect-btn" class="connect-btn">Connect</button>
+    </div>
+    </div>
+`;
+
+const QRCodeHtml = `
+<div class="mobile-wallet-adapter-embedded-modal-content">
+  <button id="mobile-wallet-adapter-embedded-modal-close" class="mobile-wallet-adapter-embedded-modal-close">
+    <svg width="14" height="14">
+      <path d="M14 12.461 8.3 6.772l5.234-5.233L12.006 0 6.772 5.234 1.54 0 0 1.539l5.234 5.233L0 12.006l1.539 1.528L6.772 8.3l5.69 5.7L14 12.461z" />
+    </svg>
+  </button>
+  <h1>Scan to connect</h1>
+  <p class="mobile-wallet-adapter-embedded-modal-subtitle">Use your wallet app to scan the QR Code and connect.</p>
+  <div id="mobile-wallet-adapter-embedded-modal-qr-code-container" />
+</div>
+`;
+
+const css = `
+.mobile-wallet-adapter-embedded-modal {
+    display: flex; /* Use flexbox to center content */
+    flex-direction: column;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.mobile-wallet-adapter-embedded-modal-content {
+    background: #10141f;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center children horizontally */
+}
+
+.mobile-wallet-adapter-embedded-modal-subtitle {
+    color: #D8D8D8;
+}
+
+.mobile-wallet-adapter-embedded-modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    padding: 12px;
+    cursor: pointer;
+    background: #1a1f2e;
+    border: none;
+    border-radius: 50%;
+}
+
+.mobile-wallet-adapter-embedded-modal-close:focus-visible {
+    outline-color: white;
+}
+
+.mobile-wallet-adapter-embedded-modal-close svg {
+    fill: #777;
+    transition: fill 200ms ease 0s;
+}
+
+.mobile-wallet-adapter-embedded-modal-close:hover svg {
+    fill: #fff;
+}
+
+.icon-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #ddd; /* Placeholder for icon background */
+}
+
+/* Modal Title */
+.mobile-wallet-adapter-embedded-modal-content h1 {
+    color: white;
+    font-size: 24px;   
+}
+
+.button-group {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+}
+
+.connect-btn, .cancel-btn {
+    flex: 1;
+    padding: 12px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.connect-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+.connect-btn:hover {
+    background-color: #0056b3;
+}
+
+.cancel-btn {
+    background-color: transparent;
+    color: #a0a0a0;
+    border: 1px solid #a0a0a0;
+}
+
+.cancel-btn:hover {
+    background-color: rgba(160, 160, 160, 0.1);
+}
+
+/* BT Connection Status */
+
+.mobile-wallet-adapter-embedded-modal-connection-status-container {
+    margin: 20px 0px 20px 0px;
+}
+
+.connection-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+}
+  
+.connection-status p {
+    margin-top: 10px;
+    color: #a0a0a0;
+}
+  
+.bluetooth-icon, .checkmark-icon {
+    width: 48px;
+    height: 48px;
+}
+  
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+  
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* QR Code */
+
+#mobile-wallet-adapter-embedded-modal-qr-code-container {
+    width: 500px;
+    height: 500px;
+    align-content: center;
+}
+`;
+
+class EmbeddedModal {
+    constructor(title) {
+        this._root = null;
+        this._title = title;
+        // Bind methods to ensure `this` context is correct
+        this.init = this.init.bind(this);
+        this.injectQRCodeHTML = this.injectQRCodeHTML.bind(this);
+        this.injectBluetoothHTML = this.injectBluetoothHTML.bind(this);
+        this.open = this.open.bind(this);
+        this.close = this.close.bind(this);
+        this.connect = this.connect.bind(this);
+        this._root = document.getElementById('mobile-wallet-adapter-embedded-root-ui');
+    }
+    init(qrCode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('Injecting modal');
+            this.injectStyles();
+            this.injectQRCodeHTML(qrCode);
+        });
+    }
+    setConnectionStatus(status) {
+        if (!this._root)
+            return;
+        const statuses = ['not-connected', 'connecting', 'connected'];
+        statuses.forEach((s) => {
+            const el = this._root.querySelector(`#status-${s}`);
+            if (el instanceof HTMLElement) {
+                el.style.display = s === status ? 'flex' : 'none';
+            }
+        });
+    }
+    injectStyles() {
+        // Check if the styles have already been injected
+        if (document.getElementById('mobile-wallet-adapter-styles')) {
+            return;
+        }
+        const styleElement = document.createElement('style');
+        styleElement.id = 'mobile-wallet-adapter-styles';
+        styleElement.textContent = css;
+        document.head.appendChild(styleElement);
+    }
+    populateQRCode(qrUrl) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const qrcodeContainer = document.getElementById('mobile-wallet-adapter-embedded-modal-qr-code-container');
+            if (qrcodeContainer) {
+                const qrCodeElement = yield QRCode__default["default"].toCanvas(qrUrl, { width: 400 });
+                if (qrcodeContainer.firstElementChild !== null) {
+                    qrcodeContainer.replaceChild(qrCodeElement, qrcodeContainer.firstElementChild);
+                }
+                else
+                    qrcodeContainer.appendChild(qrCodeElement);
+            }
+            else {
+                console.error('QRCode Container not found');
+            }
+        });
+    }
+    injectQRCodeHTML(qrCode) {
+        // Check if the HTML has already been injected
+        if (document.getElementById('mobile-wallet-adapter-embedded-root-ui')) {
+            if (!this._root)
+                this._root = document.getElementById('mobile-wallet-adapter-embedded-root-ui');
+            this.populateQRCode(qrCode);
+            return;
+        }
+        // Create a container for the modal
+        this._root = document.createElement('div');
+        this._root.id = 'mobile-wallet-adapter-embedded-root-ui';
+        this._root.className = 'mobile-wallet-adapter-embedded-modal';
+        this._root.innerHTML = QRCodeHtml;
+        this._root.style.display = 'none';
+        // Append the modal to the body
+        document.body.appendChild(this._root);
+        // Render the QRCode
+        this.populateQRCode(qrCode);
+        this.attachEventListeners();
+    }
+    injectBluetoothHTML() {
+        // Check if the HTML has already been injected
+        if (document.getElementById('mobile-wallet-adapter-embedded-root-ui')) {
+            return;
+        }
+        this._root = document.createElement('div');
+        this._root.id = 'mobile-wallet-adapter-embedded-root-ui';
+        this._root.className = 'mobile-wallet-adapter-embedded-modal';
+        this._root.innerHTML = BluetoothHtml;
+        document.body.appendChild(this._root);
+        this.attachEventListeners();
+    }
+    attachEventListeners() {
+        if (!this._root)
+            return;
+        const closeBtn = this._root.querySelector('#mobile-wallet-adapter-embedded-modal-close');
+        const cancelBtn = this._root.querySelector('#cancel-btn');
+        const connectBtn = this._root.querySelector('#connect-btn');
+        closeBtn === null || closeBtn === void 0 ? void 0 : closeBtn.addEventListener('click', () => this.close());
+        cancelBtn === null || cancelBtn === void 0 ? void 0 : cancelBtn.addEventListener('click', () => this.close());
+        connectBtn === null || connectBtn === void 0 ? void 0 : connectBtn.addEventListener('click', () => this.connect());
+    }
+    open() {
+        console.debug('Modal open');
+        if (this._root) {
+            this._root.style.display = 'flex';
+            this.setConnectionStatus('not-connected'); // Reset status when opening
+        }
+    }
+    close() {
+        console.debug('Modal close');
+        if (this._root) {
+            this._root.style.display = 'none';
+            this.setConnectionStatus('not-connected'); // Reset status when closing
+        }
+    }
+    connect() {
+        console.log('Connecting...');
+        // Mock connection
+        this.setConnectionStatus('connecting');
+        // Simulate connection process
+        setTimeout(() => {
+            this.setConnectionStatus('connected');
+            console.log('Connected!');
+        }, 5000); // 5 seconds delay
+    }
+}
+
+const SolanaMobileWalletAdapterRemoteWalletName = 'MWA (Remote)';
+const SIGNATURE_LENGTH_IN_BYTES = 64;
+function getPublicKeyFromAddress(address) {
+    const publicKeyByteArray = jsBase64.toUint8Array(address);
+    return new web3_js.PublicKey(publicKeyByteArray);
+}
+/**
+ * Determine the mobile operating system.
+ * Returns true if running on a mobile operating system, or false otherwise.
+ *
+ * @returns {boolean}
+ */
+function isMobileOperatingSystem() {
+    var userAgent = navigator.userAgent;
+    // Windows Phone must come first because its UA also contains "Android"
+    if (/windows phone/i.test(userAgent)) {
+        return true;
+    }
+    if (/android/i.test(userAgent)) {
+        return true;
+    }
+    // iOS detection from: http://stackoverflow.com/a/9039885/177710
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        return true;
+    }
+    return false;
+}
+function getIsSupported() {
+    return (typeof window !== 'undefined' &&
+        window.isSecureContext &&
+        typeof document !== 'undefined' &&
+        !isMobileOperatingSystem());
+}
+/**
+ * This burner wallet adapter is unsafe to use and is only included to provide an easy way for applications to test
+ * Wallet Adapter without using a third-party wallet.
+ */
+class SolanaMobileWalletAdapterRemote extends walletAdapterBase.BaseSignInMessageSignerWalletAdapter {
+    constructor(config) {
+        super();
+        this.supportedTransactionVersions = new Set(
+        // FIXME(#244): We can't actually know what versions are supported until we know which wallet we're talking to.
+        ['legacy', 0]);
+        this.name = SolanaMobileWalletAdapterRemoteWalletName;
+        this.url = 'https://solanamobile.com/wallets';
+        this.icon = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI4IiB3aWR0aD0iMjgiIHZpZXdCb3g9Ii0zIDAgMjggMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0iI0RDQjhGRiI+PHBhdGggZD0iTTE3LjQgMTcuNEgxNXYyLjRoMi40di0yLjRabTEuMi05LjZoLTIuNHYyLjRoMi40VjcuOFoiLz48cGF0aCBkPSJNMjEuNiAzVjBoLTIuNHYzaC0zLjZWMGgtMi40djNoLTIuNHY2LjZINC41YTIuMSAyLjEgMCAxIDEgMC00LjJoMi43VjNINC41QTQuNSA0LjUgMCAwIDAgMCA3LjVWMjRoMjEuNnYtNi42aC0yLjR2NC4ySDIuNFYxMS41Yy41LjMgMS4yLjQgMS44LjVoNy41QTYuNiA2LjYgMCAwIDAgMjQgOVYzaC0yLjRabTAgNS43YTQuMiA0LjIgMCAxIDEtOC40IDBWNS40aDguNHYzLjNaIi8+PC9nPjwvc3ZnPg==';
+        this._connecting = false;
+        /**
+         * Every time the connection is recycled in some way (eg. `disconnect()` is called)
+         * increment this and use it to make sure that `transact` calls from the previous
+         * 'generation' don't continue to do work and throw exceptions.
+         */
+        this._connectionGeneration = 0;
+        this._readyState = getIsSupported() ? walletAdapterBase.WalletReadyState.Loadable : walletAdapterBase.WalletReadyState.Unsupported;
+        this._authorizationResultCache = config.authorizationResultCache;
+        this._addressSelector = config.addressSelector;
+        this._appIdentity = config.appIdentity;
+        this._chain = config.chain;
+        this._hostAuthority = config.remoteHostAuthority;
+        this._onWalletNotFound = config.onWalletNotFound;
+        if (this._readyState !== walletAdapterBase.WalletReadyState.Unsupported) {
+            this._authorizationResultCache.get().then((authorizationResult) => {
+                if (authorizationResult) {
+                    // Having a prior authorization result is, right now, the best
+                    // indication that a mobile wallet is installed. There is no API
+                    // we can use to test for whether the association URI is supported.
+                    this.declareWalletAsInstalled();
+                }
+            });
+        }
+    }
+    get publicKey() {
+        if (this._publicKey == null && this._selectedAddress != null) {
+            try {
+                this._publicKey = getPublicKeyFromAddress(this._selectedAddress);
+            }
+            catch (e) {
+                throw new walletAdapterBase.WalletPublicKeyError((e instanceof Error && (e === null || e === void 0 ? void 0 : e.message)) || 'Unknown error', e);
+            }
+        }
+        return this._publicKey ? this._publicKey : null;
+    }
+    get connected() {
+        return !!this._authorizationResult;
+    }
+    get connecting() {
+        return this._connecting;
+    }
+    get readyState() {
+        return this._readyState;
+    }
+    declareWalletAsInstalled() {
+        if (this._readyState !== walletAdapterBase.WalletReadyState.Installed) {
+            this.emit('readyStateChange', (this._readyState = walletAdapterBase.WalletReadyState.Installed));
+        }
+    }
+    runWithGuard(callback) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                return yield callback();
+            }
+            catch (e) {
+                this.emit('error', e);
+                throw e;
+            }
+        });
+    }
+    autoConnect() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.connecting || this.connected) {
+                return;
+            }
+            return yield this.runWithGuard(() => __awaiter(this, void 0, void 0, function* () {
+                if (this._readyState !== walletAdapterBase.WalletReadyState.Installed && this._readyState !== walletAdapterBase.WalletReadyState.Loadable) {
+                    throw new walletAdapterBase.WalletNotReadyError();
+                }
+                this._connecting = true;
+                try {
+                    const cachedAuthorizationResult = yield this._authorizationResultCache.get();
+                    if (cachedAuthorizationResult) {
+                        // TODO: Evaluate whether there's any threat to not `awaiting` this expression
+                        this.handleAuthorizationResult(cachedAuthorizationResult);
+                    }
+                }
+                catch (e) {
+                    throw new walletAdapterBase.WalletConnectionError((e instanceof Error && e.message) || 'Unknown error', e);
+                }
+                finally {
+                    this._connecting = false;
+                }
+            }));
+        });
+    }
+    connect() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.connecting || this.connected) {
+                return;
+            }
+            return yield this.runWithGuard(() => __awaiter(this, void 0, void 0, function* () {
+                if (this._readyState !== walletAdapterBase.WalletReadyState.Installed && this._readyState !== walletAdapterBase.WalletReadyState.Loadable) {
+                    throw new walletAdapterBase.WalletNotReadyError();
+                }
+                this._connecting = true;
+                try {
+                    yield this.performAuthorization();
+                }
+                catch (e) {
+                    throw new walletAdapterBase.WalletConnectionError((e instanceof Error && e.message) || 'Unknown error', e);
+                }
+                finally {
+                    this._connecting = false;
+                }
+            }));
+        });
+    }
+    performAuthorization(signInPayload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const cachedAuthorizationResult = yield this._authorizationResultCache.get();
+                if (cachedAuthorizationResult) {
+                    // TODO: Evaluate whether there's any threat to not `awaiting` this expression
+                    this.handleAuthorizationResult(cachedAuthorizationResult);
+                    return cachedAuthorizationResult;
+                }
+                if (this._wallet)
+                    delete this._wallet;
+                return yield this.transact((wallet) => __awaiter(this, void 0, void 0, function* () {
+                    this._wallet = wallet;
+                    const authorizationResult = yield wallet.authorize({
+                        chain: this._chain,
+                        identity: this._appIdentity,
+                        sign_in_payload: signInPayload,
+                    });
+                    // TODO: Evaluate whether there's any threat to not `awaiting` this expression
+                    Promise.all([
+                        this._authorizationResultCache.set(authorizationResult),
+                        this.handleAuthorizationResult(authorizationResult),
+                    ]);
+                    return authorizationResult;
+                }));
+            }
+            catch (e) {
+                throw new walletAdapterBase.WalletConnectionError((e instanceof Error && e.message) || 'Unknown error', e);
+            }
+        });
+    }
+    handleAuthorizationResult(authorizationResult) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            const didPublicKeysChange = 
+            // Case 1: We started from having no authorization.
+            this._authorizationResult == null ||
+                // Case 2: The number of authorized accounts changed.
+                ((_a = this._authorizationResult) === null || _a === void 0 ? void 0 : _a.accounts.length) !== authorizationResult.accounts.length ||
+                // Case 3: The new list of addresses isn't exactly the same as the old list, in the same order.
+                this._authorizationResult.accounts.some((account, ii) => account.address !== authorizationResult.accounts[ii].address);
+            this._authorizationResult = authorizationResult;
+            this.declareWalletAsInstalled();
+            if (didPublicKeysChange) {
+                const nextSelectedAddress = yield this._addressSelector.select(authorizationResult.accounts.map(({ address }) => address));
+                if (nextSelectedAddress !== this._selectedAddress) {
+                    this._selectedAddress = nextSelectedAddress;
+                    delete this._publicKey;
+                    this.emit('connect', 
+                    // Having just set `this._selectedAddress`, `this.publicKey` is definitely non-null
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    this.publicKey);
+                }
+            }
+        });
+    }
+    performReauthorization(wallet, authToken) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const authorizationResult = yield wallet.authorize({
+                    auth_token: authToken,
+                    identity: this._appIdentity,
+                });
+                // TODO: Evaluate whether there's any threat to not `awaiting` this expression
+                Promise.all([
+                    this._authorizationResultCache.set(authorizationResult),
+                    this.handleAuthorizationResult(authorizationResult),
+                ]);
+            }
+            catch (e) {
+                this.disconnect();
+                throw new walletAdapterBase.WalletDisconnectedError((e instanceof Error && (e === null || e === void 0 ? void 0 : e.message)) || 'Unknown error', e);
+            }
+        });
+    }
+    disconnect() {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            // TODO: figure out why this call throws "TypeError: _a.terminateSession is not a function"
+            //  even though the session termination is actually executed (websocket closes). 
+            try {
+                (_a = this._wallet) === null || _a === void 0 ? void 0 : _a.terminateSession();
+            }
+            catch (e) { }
+            this._authorizationResultCache.clear(); // TODO: Evaluate whether there's any threat to not `awaiting` this expression
+            this._connecting = false;
+            this._connectionGeneration++;
+            delete this._authorizationResult;
+            delete this._publicKey;
+            delete this._selectedAddress;
+            delete this._wallet;
+            this.emit('disconnect');
+        });
+    }
+    transact(callback) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            const walletUriBase = (_a = this._authorizationResult) === null || _a === void 0 ? void 0 : _a.wallet_uri_base;
+            const baseConfig = walletUriBase ? { baseUri: walletUriBase } : undefined;
+            const remoteConfig = Object.assign(Object.assign({}, baseConfig), { remoteHostAuthority: this._hostAuthority });
+            const currentConnectionGeneration = this._connectionGeneration;
+            const modal = new EmbeddedModal('MWA QR');
+            if (this._wallet) {
+                return callback(this._wallet);
+            }
+            try {
+                const { associationUrl, result: promise } = yield mobileWalletAdapterProtocolWeb3js.transactRemote((wallet) => __awaiter(this, void 0, void 0, function* () {
+                    const result = yield callback(wallet);
+                    modal.close();
+                    return result;
+                }), remoteConfig);
+                modal.init(associationUrl.toString());
+                modal.open();
+                return yield promise;
+            }
+            catch (e) {
+                modal.close();
+                if (this._connectionGeneration !== currentConnectionGeneration) {
+                    yield new Promise(() => { }); // Never resolve.
+                }
+                if (e instanceof Error &&
+                    e.name === 'SolanaMobileWalletAdapterError' &&
+                    e.code === 'ERROR_WALLET_NOT_FOUND') {
+                    yield this._onWalletNotFound(this);
+                }
+                throw e;
+            }
+        });
+    }
+    assertIsAuthorized() {
+        if (!this._authorizationResult || !this._selectedAddress)
+            throw new walletAdapterBase.WalletNotConnectedError();
+        return {
+            authToken: this._authorizationResult.auth_token,
+            selectedAddress: this._selectedAddress,
+        };
+    }
+    performSignTransactions(transactions) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { authToken } = this.assertIsAuthorized();
+            try {
+                return yield this.transact((wallet) => __awaiter(this, void 0, void 0, function* () {
+                    yield this.performReauthorization(wallet, authToken);
+                    const signedTransactions = yield wallet.signTransactions({
+                        transactions,
+                    });
+                    return signedTransactions;
+                }));
+            }
+            catch (error) {
+                throw new walletAdapterBase.WalletSignTransactionError(error === null || error === void 0 ? void 0 : error.message, error);
+            }
+        });
+    }
+    sendTransaction(transaction, connection, options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.runWithGuard(() => __awaiter(this, void 0, void 0, function* () {
+                const { authToken } = this.assertIsAuthorized();
+                const minContextSlot = options === null || options === void 0 ? void 0 : options.minContextSlot;
+                try {
+                    return yield this.transact((wallet) => __awaiter(this, void 0, void 0, function* () {
+                        function getTargetCommitment() {
+                            let targetCommitment;
+                            switch (connection.commitment) {
+                                case 'confirmed':
+                                case 'finalized':
+                                case 'processed':
+                                    targetCommitment = connection.commitment;
+                                    break;
+                                default:
+                                    targetCommitment = 'finalized';
+                            }
+                            let targetPreflightCommitment;
+                            switch (options === null || options === void 0 ? void 0 : options.preflightCommitment) {
+                                case 'confirmed':
+                                case 'finalized':
+                                case 'processed':
+                                    targetPreflightCommitment = options.preflightCommitment;
+                                    break;
+                                case undefined:
+                                    targetPreflightCommitment = targetCommitment;
+                                    break;
+                                default:
+                                    targetPreflightCommitment = 'finalized';
+                            }
+                            const preflightCommitmentScore = targetPreflightCommitment === 'finalized'
+                                ? 2
+                                : targetPreflightCommitment === 'confirmed'
+                                    ? 1
+                                    : 0;
+                            const targetCommitmentScore = targetCommitment === 'finalized' ? 2 : targetCommitment === 'confirmed' ? 1 : 0;
+                            return preflightCommitmentScore < targetCommitmentScore
+                                ? targetPreflightCommitment
+                                : targetCommitment;
+                        }
+                        const [capabilities, _1, _2] = yield Promise.all([
+                            wallet.getCapabilities(),
+                            this.performReauthorization(wallet, authToken),
+                            walletAdapterBase.isVersionedTransaction(transaction)
+                                ? null
+                                : /**
+                                   * Unlike versioned transactions, legacy `Transaction` objects
+                                   * may not have an associated `feePayer` or `recentBlockhash`.
+                                   * This code exists to patch them up in case they are missing.
+                                   */
+                                    (() => __awaiter(this, void 0, void 0, function* () {
+                                        var _a;
+                                        transaction.feePayer || (transaction.feePayer = (_a = this.publicKey) !== null && _a !== void 0 ? _a : undefined);
+                                        if (transaction.recentBlockhash == null) {
+                                            const { blockhash } = yield connection.getLatestBlockhash({
+                                                commitment: getTargetCommitment(),
+                                            });
+                                            transaction.recentBlockhash = blockhash;
+                                        }
+                                    }))(),
+                        ]);
+                        if (capabilities.supports_sign_and_send_transactions) {
+                            const signatures = yield wallet.signAndSendTransactions({
+                                minContextSlot,
+                                transactions: [transaction],
+                            });
+                            return signatures[0];
+                        }
+                        else {
+                            const [signedTransaction] = yield wallet.signTransactions({
+                                transactions: [transaction],
+                            });
+                            if (walletAdapterBase.isVersionedTransaction(signedTransaction)) {
+                                return yield connection.sendTransaction(signedTransaction);
+                            }
+                            else {
+                                const serializedTransaction = signedTransaction.serialize();
+                                return yield connection.sendRawTransaction(serializedTransaction, Object.assign(Object.assign({}, options), { preflightCommitment: getTargetCommitment() }));
+                            }
+                        }
+                    }));
+                }
+                catch (error) {
+                    throw new walletAdapterBase.WalletSendTransactionError(error === null || error === void 0 ? void 0 : error.message, error);
+                }
+            }));
+        });
+    }
+    signTransaction(transaction) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.runWithGuard(() => __awaiter(this, void 0, void 0, function* () {
+                const [signedTransaction] = yield this.performSignTransactions([transaction]);
+                return signedTransaction;
+            }));
+        });
+    }
+    signAllTransactions(transactions) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.runWithGuard(() => __awaiter(this, void 0, void 0, function* () {
+                const signedTransactions = yield this.performSignTransactions(transactions);
+                return signedTransactions;
+            }));
+        });
+    }
+    signMessage(message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.runWithGuard(() => __awaiter(this, void 0, void 0, function* () {
+                const { authToken, selectedAddress } = this.assertIsAuthorized();
+                try {
+                    return yield this.transact((wallet) => __awaiter(this, void 0, void 0, function* () {
+                        yield this.performReauthorization(wallet, authToken);
+                        const [signedMessage] = yield wallet.signMessages({
+                            addresses: [selectedAddress],
+                            payloads: [message],
+                        });
+                        const signature = signedMessage.slice(-SIGNATURE_LENGTH_IN_BYTES);
+                        return signature;
+                    }));
+                }
+                catch (error) {
+                    throw new walletAdapterBase.WalletSignMessageError(error === null || error === void 0 ? void 0 : error.message, error);
+                }
+            }));
+        });
+    }
+    signIn(input) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.runWithGuard(() => __awaiter(this, void 0, void 0, function* () {
+                var _a, _b;
+                if (this._readyState !== walletAdapterBase.WalletReadyState.Installed && this._readyState !== walletAdapterBase.WalletReadyState.Loadable) {
+                    throw new walletAdapterBase.WalletNotReadyError();
+                }
+                this._connecting = true;
+                try {
+                    const authorizationResult = yield this.performAuthorization(Object.assign(Object.assign({}, input), { domain: (_a = input === null || input === void 0 ? void 0 : input.domain) !== null && _a !== void 0 ? _a : window.location.host }));
+                    if (!authorizationResult.sign_in_result) {
+                        throw new Error("Sign in failed, no sign in result returned by wallet");
+                    }
+                    const signedInAddress = authorizationResult.sign_in_result.address;
+                    const signedInAccount = Object.assign(Object.assign({}, (_b = authorizationResult.accounts.find(acc => acc.address == signedInAddress)) !== null && _b !== void 0 ? _b : {
+                        address: signedInAddress
+                    }), { publicKey: jsBase64.toUint8Array(signedInAddress) });
+                    return {
+                        account: signedInAccount,
+                        signedMessage: jsBase64.toUint8Array(authorizationResult.sign_in_result.signed_message),
+                        signature: jsBase64.toUint8Array(authorizationResult.sign_in_result.signature)
+                    };
+                }
+                catch (e) {
+                    throw new walletAdapterBase.WalletConnectionError((e instanceof Error && e.message) || 'Unknown error', e);
+                }
+                finally {
+                    this._connecting = false;
+                }
+            }));
+        });
+    }
+}
+
+function createDefaultAddressSelector() {
+    return {
+        select(addresses) {
+            return __awaiter(this, void 0, void 0, function* () {
+                return addresses[0];
+            });
+        },
+    };
+}
+
+const CACHE_KEY = 'SolanaMobileWalletAdapterDefaultAuthorizationCache';
+function createDefaultAuthorizationResultCache() {
+    let storage;
+    try {
+        storage = window.localStorage;
+        // eslint-disable-next-line no-empty
+    }
+    catch (_a) { }
+    return {
+        clear() {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (!storage) {
+                    return;
+                }
+                try {
+                    storage.removeItem(CACHE_KEY);
+                    // eslint-disable-next-line no-empty
+                }
+                catch (_a) { }
+            });
+        },
+        get() {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (!storage) {
+                    return;
+                }
+                try {
+                    return JSON.parse(storage.getItem(CACHE_KEY)) || undefined;
+                    // eslint-disable-next-line no-empty
+                }
+                catch (_a) { }
+            });
+        },
+        set(authorizationResult) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (!storage) {
+                    return;
+                }
+                try {
+                    storage.setItem(CACHE_KEY, JSON.stringify(authorizationResult));
+                    // eslint-disable-next-line no-empty
+                }
+                catch (_a) { }
+            });
+        },
+    };
+}
+
+function defaultWalletNotFoundHandler(mobileWalletAdapter) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (typeof window !== 'undefined') {
+            window.location.assign(mobileWalletAdapter.url);
+        }
+    });
+}
+function createDefaultWalletNotFoundHandler() {
+    return defaultWalletNotFoundHandler;
+}
+
+exports.SolanaMobileWalletAdapter = SolanaMobileWalletAdapter;
+exports.SolanaMobileWalletAdapterRemote = SolanaMobileWalletAdapterRemote;
+exports.SolanaMobileWalletAdapterRemoteWalletName = SolanaMobileWalletAdapterRemoteWalletName;
+exports.SolanaMobileWalletAdapterWalletName = SolanaMobileWalletAdapterWalletName;
+exports.createDefaultAddressSelector = createDefaultAddressSelector;
+exports.createDefaultAuthorizationResultCache = createDefaultAuthorizationResultCache;
+exports.createDefaultWalletNotFoundHandler = createDefaultWalletNotFoundHandler;

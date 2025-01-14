@@ -1,0 +1,1 @@
+{"version":3,"file":"WalletModal.d.ts","sourceRoot":"","sources":["../../src/WalletModal.tsx"],"names":[],"mappings":"AAIA,OAAO,KAAK,EAAE,EAAE,EAAc,MAAM,OAAO,CAAC;AAQ5C,MAAM,WAAW,gBAAgB;IAC7B,SAAS,CAAC,EAAE,MAAM,CAAC;IACnB,SAAS,CAAC,EAAE,MAAM,CAAC;CACtB;AAED,eAAO,MAAM,WAAW,EAAE,EAAE,CAAC,gBAAgB,CA2N5C,CAAC"}
