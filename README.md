@@ -13,19 +13,19 @@ install:
 - create solana keys
 - set solana cluster to local
 - activate pnpm:
-> corepack enable
+`corepack enable`
 
-> corepack prepare pnpm@9 --activate
+`corepack prepare pnpm@9 --activate`
 
 - run
-> pnpm install
+`pnpm install`
 
-> pnpm build
+`pnpm build`
 
-> npm run anchor-localnet
+`npm run anchor-localnet`
 
 (if you see this error "no such command: `build-sbf`" do "export PATH=~/.local/share/solana/install/active_release/bin:$PATH")
 
 in an other tab do
 
-> npm run dev
+`npm run dev`
