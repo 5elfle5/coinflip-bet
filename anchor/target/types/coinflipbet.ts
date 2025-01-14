@@ -138,14 +138,14 @@ export type Coinflipbet = {
     {
       "name": "coinflipbet",
       "discriminator": [
-        255,
-        176,
-        4,
-        245,
-        188,
-        253,
-        124,
-        25
+        43,
+        67,
+        202,
+        144,
+        171,
+        102,
+        58,
+        228
       ]
     }
   ],
