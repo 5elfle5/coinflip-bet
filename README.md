@@ -18,13 +18,14 @@ install:
 `corepack prepare pnpm@9 --activate`
 
 - run
+
 `pnpm install`
 
 `pnpm build`
 
 `npm run anchor-localnet`
 
-(if you see this error "no such command: `build-sbf`" do "export PATH=~/.local/share/solana/install/active_release/bin:$PATH")
+(if you see this error "no such command: build-sbf" do `export PATH=~/.local/share/solana/install/active_release/bin:$PATH`)
 
 in an other tab do
 
