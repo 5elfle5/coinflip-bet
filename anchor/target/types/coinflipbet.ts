@@ -156,6 +156,18 @@ export type Coinflipbet = {
         "kind": "struct",
         "fields": [
           {
+            "name": "roll",
+            "type": "i64"
+          },
+          {
+            "name": "won",
+            "type": "bool"
+          },
+          {
+            "name": "betOnSide",
+            "type": "u8"
+          },
+          {
             "name": "count",
             "type": "u8"
           }

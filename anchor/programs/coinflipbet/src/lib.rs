@@ -32,6 +32,14 @@ pub mod coinflipbet {
   }
 }
 
+#[account]
+#[derive(InitSpace)]
+pub struct FlipResult {
+  pub roll: i64,
+  pub won: bool,
+  pub bet_on_side: u8,
+}
+
 #[derive(Accounts)]
 pub struct InitializeCoinflipbet<'info> {
   #[account(mut)]
@@ -39,7 +47,7 @@ pub struct InitializeCoinflipbet<'info> {
 
   #[account(
   init,
-  space = 8 + Coinflipbet::INIT_SPACE,
+  space = 8 + 1 + 1 + 1 + Coinflipbet::INIT_SPACE,
   payer = payer
   )]
   pub coinflipbet: Account<'info, Coinflipbet>,
@@ -52,7 +60,7 @@ pub struct CloseCoinflipbet<'info> {
 
   #[account(
   mut,
-  close = payer, // close account and return lamports to payer
+  close = payer,
   )]
   pub coinflipbet: Account<'info, Coinflipbet>,
 }
@@ -66,5 +74,8 @@ pub struct Update<'info> {
 #[account]
 #[derive(InitSpace)]
 pub struct Coinflipbet {
-  count: u8,
+  pub roll: i64,
+  pub won: bool,
+  pub bet_on_side: u8,
+  pub count: u8,
 }
