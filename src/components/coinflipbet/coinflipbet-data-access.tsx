@@ -77,7 +77,7 @@ export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }
 
   const incrementMutation = useMutation({
     mutationKey: ['coinflipbet', 'increment', { cluster, account }],
-    mutationFn: () => program.methods.increment().accounts({ coinflipbet: account }).rpc(),
+    mutationFn: () => program.methods.bet().accounts({ coinflipbet: account }).rpc(),
     onSuccess: (tx) => {
       transactionToast(tx)
       return accountQuery.refetch()

@@ -54,9 +54,9 @@ export function CoinflipbetList() {
 function CoinflipbetCard({ account }: { account: PublicKey }) {
   const { accountQuery, incrementMutation, setMutation, decrementMutation, closeMutation } = useCoinflipbetProgramAccount({
     account,
-  })
+  });
 
-  const count = useMemo(() => accountQuery.data?.count ?? 0, [accountQuery.data?.count])
+  const count = useMemo(() => accountQuery.data?.roll ?? 0, [accountQuery.data?.roll])
 
   return accountQuery.isLoading ? (
     <span className="loading loading-spinner loading-lg"></span>
@@ -73,7 +73,7 @@ function CoinflipbetCard({ account }: { account: PublicKey }) {
               onClick={() => incrementMutation.mutateAsync()}
               disabled={incrementMutation.isPending}
             >
-              Increment
+              Bet
             </button>
             <button
               className="btn btn-xs lg:btn-md btn-outline"

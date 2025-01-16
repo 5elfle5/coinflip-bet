@@ -17,8 +17,11 @@ pub mod coinflipbet {
     Ok(())
   }
 
-  pub fn increment(ctx: Context<Update>) -> Result<()> {
+  pub fn bet(ctx: Context<Update>) -> Result<()> {
     ctx.accounts.coinflipbet.count = ctx.accounts.coinflipbet.count.checked_add(1).unwrap();
+    ctx.accounts.coinflipbet.won = false;
+    ctx.accounts.coinflipbet.bet_on_side = 1;
+    ctx.accounts.coinflipbet.roll = 150;
     Ok(())
   }
 
@@ -74,7 +77,7 @@ pub struct Update<'info> {
 #[account]
 #[derive(InitSpace)]
 pub struct Coinflipbet {
-  pub roll: i64,
+  pub roll: u32,
   pub won: bool,
   pub bet_on_side: u8,
   pub count: u8,

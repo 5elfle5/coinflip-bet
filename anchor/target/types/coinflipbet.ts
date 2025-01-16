@@ -14,6 +14,26 @@ export type Coinflipbet = {
   },
   "instructions": [
     {
+      "name": "bet",
+      "discriminator": [
+        94,
+        203,
+        166,
+        126,
+        20,
+        243,
+        169,
+        82
+      ],
+      "accounts": [
+        {
+          "name": "coinflipbet",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "close",
       "discriminator": [
         98,
@@ -49,26 +69,6 @@ export type Coinflipbet = {
         27,
         150,
         101
-      ],
-      "accounts": [
-        {
-          "name": "coinflipbet",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "increment",
-      "discriminator": [
-        11,
-        18,
-        104,
-        9,
-        104,
-        174,
-        59,
-        33
       ],
       "accounts": [
         {
@@ -157,7 +157,7 @@ export type Coinflipbet = {
         "fields": [
           {
             "name": "roll",
-            "type": "i64"
+            "type": "u32"
           },
           {
             "name": "won",
