@@ -93,7 +93,82 @@
         {
           "name": "coinflipbet",
           "writable": true,
-          "signer": true
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  105,
+                  110,
+                  102,
+                  108,
+                  105,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "wager",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  119,
+                  97,
+                  103,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  9,
+                  43,
+                  225,
+                  230,
+                  237,
+                  13,
+                  216,
+                  237,
+                  44,
+                  121,
+                  170,
+                  202,
+                  171,
+                  13,
+                  123,
+                  122,
+                  17,
+                  76,
+                  28,
+                  165,
+                  22,
+                  109,
+                  84,
+                  97,
+                  252,
+                  22,
+                  20,
+                  59,
+                  1,
+                  116,
+                  88,
+                  174
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "system_program",
@@ -141,6 +216,19 @@
         58,
         228
       ]
+    },
+    {
+      "name": "Wager",
+      "discriminator": [
+        3,
+        110,
+        53,
+        190,
+        113,
+        31,
+        230,
+        40
+      ]
     }
   ],
   "types": [
@@ -161,6 +249,18 @@
             "name": "bet_on_side",
             "type": "u8"
           },
+          {
+            "name": "count",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Wager",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
             "name": "count",
             "type": "u8"

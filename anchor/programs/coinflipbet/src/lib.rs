@@ -50,10 +50,21 @@ pub struct InitializeCoinflipbet<'info> {
 
   #[account(
   init,
-  space = 8 + 1 + 1 + 1 + Coinflipbet::INIT_SPACE,
-  payer = payer
+  space = 8 + 1 + 1 + 1 + 8,
+  payer = payer,
+  seeds = [b"coinflip", payer.key().as_ref()],
+  bump
   )]
   pub coinflipbet: Account<'info, Coinflipbet>,
+
+  #[account(
+  init,
+  space = 8 + 8,
+  payer = payer,
+  seeds = [b"wager", crate::ID.as_ref()],
+  bump
+  )]
+  pub wager: Account<'info, Wager>,
   pub system_program: Program<'info, System>,
 }
 #[derive(Accounts)]
@@ -80,5 +91,11 @@ pub struct Coinflipbet {
   pub roll: u32,
   pub won: bool,
   pub bet_on_side: u8,
+  pub count: u8,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct Wager {
   pub count: u8,
 }

@@ -1,4 +1,4 @@
-import { Keypair, PublicKey } from '@solana/web3.js'
+import { PublicKey } from '@solana/web3.js'
 import { useMemo } from 'react'
 import { ExplorerLink } from '../cluster/cluster-ui'
 import { ellipsify } from '../ui/ui-layout'
@@ -10,7 +10,7 @@ export function CoinflipbetCreate() {
   return (
     <button
       className="btn btn-xs lg:btn-md btn-primary"
-      onClick={() => initialize.mutateAsync(Keypair.generate())}
+      onClick={() => initialize.mutateAsync()}
       disabled={initialize.isPending}
     >
       Create {initialize.isPending && '...'}

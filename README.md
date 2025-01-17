@@ -25,7 +25,12 @@ install:
 
 `npm run anchor-localnet`
 
-(if you see this error "no such command: build-sbf" do `export PATH=~/.local/share/solana/install/active_release/bin:$PATH`)
+(if you see this error "no such command: build-sbf" do 
+add
+
+`PATH=~/.local/share/solana/install/active_release/bin:$PATH`
+
+to .bashrc (or .zshrc if you use zsh))
 
 in an other tab do
 

@@ -1,6 +1,6 @@
 import { getCoinflipbetProgram, getCoinflipbetProgramId } from '@project/anchor'
-import { useConnection } from '@solana/wallet-adapter-react'
-import { Cluster, Keypair, PublicKey } from '@solana/web3.js'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { Cluster, Keypair, PublicKey, SystemProgram } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 import { useMemo } from 'react'
@@ -10,6 +10,7 @@ import { useAnchorProvider } from '../solana/solana-provider'
 import { useTransactionToast } from '../ui/ui-layout'
 
 export function useCoinflipbetProgram() {
+  const payer = useWallet()?.publicKey ?? Keypair.generate().publicKey;
   const { connection } = useConnection()
   const { cluster } = useCluster()
   const transactionToast = useTransactionToast()
@@ -29,13 +30,28 @@ export function useCoinflipbetProgram() {
 
   const initialize = useMutation({
     mutationKey: ['coinflipbet', 'initialize', { cluster }],
-    mutationFn: (keypair: Keypair) =>
-      program.methods.initialize().accounts({ coinflipbet: keypair.publicKey }).signers([keypair]).rpc(),
+    mutationFn: () => {
+      const [coinflipbet, coinflipbetBump] = PublicKey.findProgramAddressSync(
+        [Buffer.from("coinflip"), payer.toBuffer()],
+        program.programId
+      );
+      const [wager, wagerBump] = PublicKey.findProgramAddressSync(
+        [Buffer.from("wager"), program.programId.toBuffer()],
+        program.programId
+      );
+      const systemProgram = SystemProgram.programId;
+      return program.methods.initialize().accounts({
+        payer,
+        coinflipbet,
+        wager,
+        systemProgram
+      }).rpc();
+    },
     onSuccess: (signature) => {
       transactionToast(signature)
       return accounts.refetch()
     },
-    onError: () => toast.error('Failed to initialize account'),
+    onError: (e) => toast.error(JSON.stringify(e)),
   })
 
   return {
