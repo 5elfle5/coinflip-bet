@@ -20,7 +20,7 @@ export function useCoinflipbetProgram() {
 
   const accounts = useQuery({
     queryKey: ['coinflipbet', 'all', { cluster }],
-    queryFn: () => program.account.coinflipbet.all(),
+    queryFn: () => program.account.wager.all(),
   })
 
   const getProgramAccount = useQuery({
@@ -28,21 +28,16 @@ export function useCoinflipbetProgram() {
     queryFn: () => connection.getParsedAccountInfo(programId),
   })
 
-  const initialize = useMutation({
+  const createWager = useMutation({
     mutationKey: ['coinflipbet', 'initialize', { cluster }],
     mutationFn: () => {
-      const [coinflipbet, coinflipbetBump] = PublicKey.findProgramAddressSync(
-        [Buffer.from("coinflip"), payer.toBuffer()],
-        program.programId
-      );
-      const [wager, wagerBump] = PublicKey.findProgramAddressSync(
-        [Buffer.from("wager"), program.programId.toBuffer()],
+      const [wager,] = PublicKey.findProgramAddressSync(
+        [Buffer.from("wager"), payer.toBuffer()],
         program.programId
       );
       const systemProgram = SystemProgram.programId;
-      return program.methods.initialize().accounts({
+      return program.methods.createWager().accounts({
         payer,
-        coinflipbet,
         wager,
         systemProgram
       }).rpc();
@@ -59,7 +54,7 @@ export function useCoinflipbetProgram() {
     programId,
     accounts,
     getProgramAccount,
-    initialize,
+    initialize: createWager,
   }
 }
 
@@ -70,7 +65,7 @@ export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }
 
   const accountQuery = useQuery({
     queryKey: ['coinflipbet', 'fetch', { cluster, account }],
-    queryFn: () => program.account.coinflipbet.fetch(account),
+    queryFn: () => program.account.wager.fetch(account),
   })
 
   const closeMutation = useMutation({

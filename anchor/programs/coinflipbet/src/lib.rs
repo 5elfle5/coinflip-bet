@@ -8,6 +8,14 @@ declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
 pub mod coinflipbet {
     use super::*;
 
+  pub fn initialize(_ctx: Context<InitializeBankroll>) -> Result<()> {
+    Ok(())
+  }
+
+  pub fn create_wager(_ctx: Context<CreateWager>) -> Result<()> {
+    Ok(())
+  }
+
   pub fn close(_ctx: Context<CloseCoinflipbet>) -> Result<()> {
     Ok(())
   }
@@ -22,10 +30,6 @@ pub mod coinflipbet {
     ctx.accounts.coinflipbet.won = false;
     ctx.accounts.coinflipbet.bet_on_side = 1;
     ctx.accounts.coinflipbet.roll = 150;
-    Ok(())
-  }
-
-  pub fn initialize(_ctx: Context<InitializeCoinflipbet>) -> Result<()> {
     Ok(())
   }
 
@@ -44,7 +48,7 @@ pub struct FlipResult {
 }
 
 #[derive(Accounts)]
-pub struct InitializeCoinflipbet<'info> {
+pub struct CreateWager<'info> {
   #[account(mut)]
   pub payer: Signer<'info>,
 
@@ -52,21 +56,31 @@ pub struct InitializeCoinflipbet<'info> {
   init,
   space = 8 + 1 + 1 + 1 + 8,
   payer = payer,
-  seeds = [b"coinflip", payer.key().as_ref()],
+  seeds = [b"wager", payer.key().as_ref()],
   bump
   )]
-  pub coinflipbet: Account<'info, Coinflipbet>,
+  pub wager: Account<'info, Wager>,
+
+  pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct InitializeBankroll<'info> {
+  #[account(mut)]
+  pub payer: Signer<'info>,
 
   #[account(
   init,
   space = 8 + 8,
   payer = payer,
-  seeds = [b"wager", crate::ID.as_ref()],
+  seeds = [b"bankroll", crate::ID.as_ref()],
   bump
   )]
-  pub wager: Account<'info, Wager>,
+  pub bankroll: Account<'info, Bankroll>,
+
   pub system_program: Program<'info, System>,
 }
+
 #[derive(Accounts)]
 pub struct CloseCoinflipbet<'info> {
   #[account(mut)]
@@ -76,18 +90,18 @@ pub struct CloseCoinflipbet<'info> {
   mut,
   close = payer,
   )]
-  pub coinflipbet: Account<'info, Coinflipbet>,
+  pub coinflipbet: Account<'info, Wager>,
 }
 
 #[derive(Accounts)]
 pub struct Update<'info> {
   #[account(mut)]
-  pub coinflipbet: Account<'info, Coinflipbet>,
+  pub coinflipbet: Account<'info, Wager>,
 }
 
 #[account]
 #[derive(InitSpace)]
-pub struct Coinflipbet {
+pub struct Wager {
   pub roll: u32,
   pub won: bool,
   pub bet_on_side: u8,
@@ -96,6 +110,6 @@ pub struct Coinflipbet {
 
 #[account]
 #[derive(InitSpace)]
-pub struct Wager {
+pub struct Bankroll {
   pub count: u8,
 }

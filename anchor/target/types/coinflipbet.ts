@@ -59,6 +59,53 @@ export type Coinflipbet = {
       "args": []
     },
     {
+      "name": "createWager",
+      "discriminator": [
+        210,
+        82,
+        178,
+        75,
+        253,
+        34,
+        84,
+        120
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "wager",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  119,
+                  97,
+                  103,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "decrement",
       "discriminator": [
         106,
@@ -97,43 +144,21 @@ export type Coinflipbet = {
           "signer": true
         },
         {
-          "name": "coinflipbet",
+          "name": "bankroll",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  99,
-                  111,
-                  105,
-                  110,
-                  102,
-                  108,
-                  105,
-                  112
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "payer"
-              }
-            ]
-          }
-        },
-        {
-          "name": "wager",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  119,
+                  98,
                   97,
-                  103,
-                  101,
-                  114
+                  110,
+                  107,
+                  114,
+                  111,
+                  108,
+                  108
                 ]
               },
               {
@@ -211,16 +236,16 @@ export type Coinflipbet = {
   ],
   "accounts": [
     {
-      "name": "coinflipbet",
+      "name": "bankroll",
       "discriminator": [
-        43,
-        67,
-        202,
-        144,
-        171,
-        102,
-        58,
-        228
+        136,
+        99,
+        239,
+        106,
+        251,
+        134,
+        101,
+        186
       ]
     },
     {
@@ -239,7 +264,19 @@ export type Coinflipbet = {
   ],
   "types": [
     {
-      "name": "coinflipbet",
+      "name": "bankroll",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "count",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "wager",
       "type": {
         "kind": "struct",
         "fields": [
@@ -255,18 +292,6 @@ export type Coinflipbet = {
             "name": "betOnSide",
             "type": "u8"
           },
-          {
-            "name": "count",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "wager",
-      "type": {
-        "kind": "struct",
-        "fields": [
           {
             "name": "count",
             "type": "u8"

@@ -13,6 +13,7 @@ install:
 - create solana keys
 - set solana cluster to local
 - activate pnpm:
+
 `corepack enable`
 
 `corepack prepare pnpm@9 --activate`
