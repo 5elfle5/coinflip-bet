@@ -1,6 +1,7 @@
 #![allow(clippy::result_large_err)]
 
 use anchor_lang::prelude::*;
+use anchor_lang::system_program::{ transfer, Transfer };
 
 mod structs;
 use structs::*;
@@ -23,8 +24,20 @@ pub mod coinflipbet {
     Ok(())
   }
 
-  pub fn decrement(ctx: Context<UpdateBankroll>) -> Result<()> {
-    ctx.accounts.bankroll.count = ctx.accounts.bankroll.count.checked_add(1).unwrap();
+  pub fn decrement(ctx: Context<UpdateBankroll>, amount: u64) -> Result<()> {
+    let from_pubkey = ctx.accounts.payer.to_account_info();
+    let to_pubkey = ctx.accounts.bankroll.to_account_info();
+    let program_id = ctx.accounts.system_program.to_account_info();
+
+    let cpi_context = CpiContext::new(
+        program_id,
+        Transfer {
+            from: from_pubkey,
+            to: to_pubkey,
+        },
+    );
+
+    transfer(cpi_context, amount)?;
     Ok(())
   }
 

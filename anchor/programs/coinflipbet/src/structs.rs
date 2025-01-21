@@ -78,5 +78,10 @@ pub struct Update<'info> {
 #[derive(Accounts)]
 pub struct UpdateBankroll<'info> {
   #[account(mut)]
+  pub payer: Signer<'info>,
+
+  #[account(mut)]
   pub bankroll: Account<'info, Bankroll>,
+
+  pub system_program: Program<'info, System>,
 }
