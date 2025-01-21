@@ -1,6 +1,6 @@
 import { getCoinflipbetProgram, getCoinflipbetProgramId } from '@project/anchor'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { Cluster, Keypair, PublicKey, SystemProgram } from '@solana/web3.js'
+import { Cluster, Keypair, PublicKey } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 import { useMemo } from 'react'
@@ -31,15 +31,8 @@ export function useCoinflipbetProgram() {
   const createWager = useMutation({
     mutationKey: ['coinflipbet', 'initialize', { cluster }],
     mutationFn: () => {
-      const [wager,] = PublicKey.findProgramAddressSync(
-        [Buffer.from("wager"), payer.toBuffer()],
-        program.programId
-      );
-      const systemProgram = SystemProgram.programId;
       return program.methods.createWager().accounts({
         payer,
-        wager,
-        systemProgram
       }).rpc();
     },
     onSuccess: (signature) => {
