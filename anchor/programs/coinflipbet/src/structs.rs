@@ -2,14 +2,6 @@ use anchor_lang::prelude::*;
 
 #[account]
 #[derive(InitSpace)]
-pub struct FlipResult {
-  pub roll: i64,
-  pub won: bool,
-  pub bet_on_side: u8,
-}
-
-#[account]
-#[derive(InitSpace)]
 pub struct Wager {
   pub roll: u32,
   pub won: bool,
@@ -20,7 +12,6 @@ pub struct Wager {
 #[account]
 #[derive(InitSpace)]
 pub struct Bankroll {
-  pub count: u8,
 }
 
 #[derive(Accounts)]

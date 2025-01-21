@@ -26,8 +26,6 @@ const main = async () => {
     })
     .signers([keypair])
     .rpc();
-  const br = await program.account.bankroll.fetch(bankroll);
-  console.log(JSON.stringify(br));
 };
 
 main().catch((err) => console.error("An error occurred:", err));

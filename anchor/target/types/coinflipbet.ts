@@ -248,12 +248,7 @@ export type Coinflipbet = {
       "name": "bankroll",
       "type": {
         "kind": "struct",
-        "fields": [
-          {
-            "name": "count",
-            "type": "u8"
-          }
-        ]
+        "fields": []
       }
     },
     {
