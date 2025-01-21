@@ -63,7 +63,7 @@ export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }
 
   const closeMutation = useMutation({
     mutationKey: ['coinflipbet', 'close', { cluster, account }],
-    mutationFn: () => program.methods.close().accounts({ coinflipbet: account }).rpc(),
+    mutationFn: () => program.methods.close().accounts({ wager: account }).rpc(),
     onSuccess: (tx) => {
       transactionToast(tx)
       return accounts.refetch()
@@ -72,7 +72,7 @@ export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }
 
   const decrementMutation = useMutation({
     mutationKey: ['coinflipbet', 'decrement', { cluster, account }],
-    mutationFn: () => program.methods.decrement().accounts({ coinflipbet: account }).rpc(),
+    mutationFn: () => program.methods.decrement().accounts({ wager: account }).rpc(),
     onSuccess: (tx) => {
       transactionToast(tx)
       return accountQuery.refetch()
@@ -81,7 +81,7 @@ export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }
 
   const incrementMutation = useMutation({
     mutationKey: ['coinflipbet', 'increment', { cluster, account }],
-    mutationFn: () => program.methods.bet().accounts({ coinflipbet: account }).rpc(),
+    mutationFn: () => program.methods.bet().accounts({ wager: account }).rpc(),
     onSuccess: (tx) => {
       transactionToast(tx)
       return accountQuery.refetch()
@@ -90,7 +90,7 @@ export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }
 
   const setMutation = useMutation({
     mutationKey: ['coinflipbet', 'set', { cluster, account }],
-    mutationFn: (value: number) => program.methods.set(value).accounts({ coinflipbet: account }).rpc(),
+    mutationFn: (value: number) => program.methods.set(value).accounts({ wager: account }).rpc(),
     onSuccess: (tx) => {
       transactionToast(tx)
       return accountQuery.refetch()

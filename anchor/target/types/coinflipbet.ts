@@ -27,7 +27,7 @@ export type Coinflipbet = {
       ],
       "accounts": [
         {
-          "name": "coinflipbet",
+          "name": "wager",
           "writable": true
         }
       ],
@@ -52,7 +52,7 @@ export type Coinflipbet = {
           "signer": true
         },
         {
-          "name": "coinflipbet",
+          "name": "wager",
           "writable": true
         }
       ],
@@ -119,7 +119,7 @@ export type Coinflipbet = {
       ],
       "accounts": [
         {
-          "name": "coinflipbet",
+          "name": "wager",
           "writable": true
         }
       ],
@@ -162,41 +162,8 @@ export type Coinflipbet = {
                 ]
               },
               {
-                "kind": "const",
-                "value": [
-                  9,
-                  43,
-                  225,
-                  230,
-                  237,
-                  13,
-                  216,
-                  237,
-                  44,
-                  121,
-                  170,
-                  202,
-                  171,
-                  13,
-                  123,
-                  122,
-                  17,
-                  76,
-                  28,
-                  165,
-                  22,
-                  109,
-                  84,
-                  97,
-                  252,
-                  22,
-                  20,
-                  59,
-                  1,
-                  116,
-                  88,
-                  174
-                ]
+                "kind": "account",
+                "path": "payer"
               }
             ]
           }
@@ -222,7 +189,7 @@ export type Coinflipbet = {
       ],
       "accounts": [
         {
-          "name": "coinflipbet",
+          "name": "wager",
           "writable": true
         }
       ],

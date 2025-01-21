@@ -8,7 +8,8 @@ declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
 pub mod coinflipbet {
     use super::*;
 
-  pub fn initialize(_ctx: Context<InitializeBankroll>) -> Result<()> {
+  pub fn initialize(ctx: Context<InitializeBankroll>) -> Result<()> {
+    ctx.accounts.bankroll.count = 20;
     Ok(())
   }
 
@@ -21,20 +22,20 @@ pub mod coinflipbet {
   }
 
   pub fn decrement(ctx: Context<Update>) -> Result<()> {
-    ctx.accounts.coinflipbet.count = ctx.accounts.coinflipbet.count.checked_sub(1).unwrap();
+    ctx.accounts.wager.count = ctx.accounts.wager.count.checked_sub(1).unwrap();
     Ok(())
   }
 
   pub fn bet(ctx: Context<Update>) -> Result<()> {
-    ctx.accounts.coinflipbet.count = ctx.accounts.coinflipbet.count.checked_add(1).unwrap();
-    ctx.accounts.coinflipbet.won = false;
-    ctx.accounts.coinflipbet.bet_on_side = 1;
-    ctx.accounts.coinflipbet.roll = 150;
+    ctx.accounts.wager.count = ctx.accounts.wager.count.checked_add(1).unwrap();
+    ctx.accounts.wager.won = false;
+    ctx.accounts.wager.bet_on_side = 1;
+    ctx.accounts.wager.roll = 150;
     Ok(())
   }
 
   pub fn set(ctx: Context<Update>, value: u8) -> Result<()> {
-    ctx.accounts.coinflipbet.count = value.clone();
+    ctx.accounts.wager.count = value.clone();
     Ok(())
   }
 }
@@ -73,7 +74,7 @@ pub struct InitializeBankroll<'info> {
   init,
   space = 8 + 8,
   payer = payer,
-  seeds = [b"bankroll", crate::ID.as_ref()],
+  seeds = [b"bankroll", payer.key().as_ref()],
   bump
   )]
   pub bankroll: Account<'info, Bankroll>,
@@ -90,13 +91,13 @@ pub struct CloseCoinflipbet<'info> {
   mut,
   close = payer,
   )]
-  pub coinflipbet: Account<'info, Wager>,
+  pub wager: Account<'info, Wager>,
 }
 
 #[derive(Accounts)]
 pub struct Update<'info> {
   #[account(mut)]
-  pub coinflipbet: Account<'info, Wager>,
+  pub wager: Account<'info, Wager>,
 }
 
 #[account]
