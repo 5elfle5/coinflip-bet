@@ -119,7 +119,7 @@ export type Coinflipbet = {
       ],
       "accounts": [
         {
-          "name": "wager",
+          "name": "bankroll",
           "writable": true
         }
       ],

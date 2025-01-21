@@ -8,8 +8,7 @@ declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
 pub mod coinflipbet {
     use super::*;
 
-  pub fn initialize(ctx: Context<InitializeBankroll>) -> Result<()> {
-    ctx.accounts.bankroll.count = 20;
+  pub fn initialize(_ctx: Context<InitializeBankroll>) -> Result<()> {
     Ok(())
   }
 
@@ -21,8 +20,8 @@ pub mod coinflipbet {
     Ok(())
   }
 
-  pub fn decrement(ctx: Context<Update>) -> Result<()> {
-    ctx.accounts.wager.count = ctx.accounts.wager.count.checked_sub(1).unwrap();
+  pub fn decrement(ctx: Context<UpdateBankroll>) -> Result<()> {
+    ctx.accounts.bankroll.count = ctx.accounts.bankroll.count.checked_add(1).unwrap();
     Ok(())
   }
 
@@ -98,6 +97,12 @@ pub struct CloseCoinflipbet<'info> {
 pub struct Update<'info> {
   #[account(mut)]
   pub wager: Account<'info, Wager>,
+}
+
+#[derive(Accounts)]
+pub struct UpdateBankroll<'info> {
+  #[account(mut)]
+  pub bankroll: Account<'info, Bankroll>,
 }
 
 #[account]

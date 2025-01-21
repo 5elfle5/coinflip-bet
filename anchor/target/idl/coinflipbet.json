@@ -113,7 +113,7 @@
       ],
       "accounts": [
         {
-          "name": "wager",
+          "name": "bankroll",
           "writable": true
         }
       ],
