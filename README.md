@@ -46,6 +46,7 @@ to .bashrc (or .zshrc if you use zsh))
 in an other tab do
 
 `solana airdrop 3 8rAzBfiAhTseoJZGyfijc4WFWFwTvZfgBXtNNDaX5qP7`
+
 (this is the pubkey for the keys inside init-script, you can generate your own keys)
 
 `ts-node init-script/src/init.ts`
