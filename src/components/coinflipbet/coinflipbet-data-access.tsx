@@ -75,8 +75,15 @@ export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }
 
   const decrementMutation = useMutation({
     mutationKey: ['coinflipbet', 'decrement', { cluster, account }],
-    //topup should be accessible to end user
-    mutationFn: () => program.methods.topup(new BN(1000000)).accounts({ payer: account }).rpc(),
+    mutationFn: () => {
+      const [wager,] = PublicKey.findProgramAddressSync(
+        [Buffer.from('wager'), payer.toBuffer()],
+        program.programId
+      );
+      return program.methods.flip(new BN(200000000))
+        .accounts({ payer, wager })
+        .rpc();
+    },
     onSuccess: (tx) => {
       transactionToast(tx)
       return accountQuery.refetch()

@@ -93,7 +93,7 @@ function CoinflipbetCard({ account }: { account: PublicKey }) {
               onClick={() => decrementMutation.mutateAsync()}
               disabled={decrementMutation.isPending}
             >
-              Topup
+              Flip
             </button>
           </div>
           <div className="text-center space-y-4">

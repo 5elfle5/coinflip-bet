@@ -28,6 +28,7 @@ pub mod coinflipbet {
     let from_pubkey = ctx.accounts.payer.to_account_info();
     let to_pubkey = ctx.accounts.bankroll.to_account_info();
     let program_id = ctx.accounts.system_program.to_account_info();
+    msg!("Bankroll PDA: {}", ctx.accounts.bankroll.key());
 
     let cpi_context = CpiContext::new(
       program_id,
@@ -44,11 +45,11 @@ pub mod coinflipbet {
   pub fn bet(ctx: Context<Update>, amount: u64) -> Result<()> {
     let to_pubkey = ctx.accounts.wager.to_account_info();
     let program_id = ctx.accounts.system_program.to_account_info();
-    let from_pubkey = ctx.accounts.payer.to_account_info();
+    let user_pubkey = ctx.accounts.payer.to_account_info();
     let user_transaction_context = CpiContext::new(
       program_id.clone(),
       Transfer {
-        from: from_pubkey,
+        from: user_pubkey,
         to: to_pubkey.clone(),
       },
     );
@@ -64,8 +65,15 @@ pub mod coinflipbet {
     Ok(())
   }
 
-  pub fn set(ctx: Context<Update>, value: u8) -> Result<()> {
-    ctx.accounts.wager.count = value.clone();
+  pub fn flip(ctx: Context<Update>, amount: u64) -> Result<()> {
+    // let user_account = ctx.accounts.payer.clone();
+    // let wager_account = ctx.accounts.wager.clone();
+    // **wager_account.to_account_info().lamports.borrow_mut() -= amount;
+    // **user_account.to_account_info().lamports.borrow_mut() += amount;
+    let bankroll_account = ctx.accounts.bankroll.clone();
+    let wager_account = ctx.accounts.wager.clone();
+    **wager_account.to_account_info().lamports.borrow_mut() -= amount;
+    **bankroll_account.to_account_info().lamports.borrow_mut() += amount;
     Ok(())
   }
 }

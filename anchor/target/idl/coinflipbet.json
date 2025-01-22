@@ -172,6 +172,98 @@
       "args": []
     },
     {
+      "name": "flip",
+      "discriminator": [
+        24,
+        243,
+        78,
+        161,
+        192,
+        246,
+        102,
+        103
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "wager",
+          "writable": true
+        },
+        {
+          "name": "bankroll",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  97,
+                  110,
+                  107,
+                  114,
+                  111,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  9,
+                  43,
+                  225,
+                  230,
+                  237,
+                  13,
+                  216,
+                  237,
+                  44,
+                  121,
+                  170,
+                  202,
+                  171,
+                  13,
+                  123,
+                  122,
+                  17,
+                  76,
+                  28,
+                  165,
+                  22,
+                  109,
+                  84,
+                  97,
+                  252,
+                  22,
+                  20,
+                  59,
+                  1,
+                  116,
+                  88,
+                  174
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "initialize",
       "discriminator": [
         175,
@@ -253,98 +345,6 @@
         }
       ],
       "args": []
-    },
-    {
-      "name": "set",
-      "discriminator": [
-        198,
-        51,
-        53,
-        241,
-        116,
-        29,
-        126,
-        194
-      ],
-      "accounts": [
-        {
-          "name": "payer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "wager",
-          "writable": true
-        },
-        {
-          "name": "bankroll",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  98,
-                  97,
-                  110,
-                  107,
-                  114,
-                  111,
-                  108,
-                  108
-                ]
-              },
-              {
-                "kind": "const",
-                "value": [
-                  9,
-                  43,
-                  225,
-                  230,
-                  237,
-                  13,
-                  216,
-                  237,
-                  44,
-                  121,
-                  170,
-                  202,
-                  171,
-                  13,
-                  123,
-                  122,
-                  17,
-                  76,
-                  28,
-                  165,
-                  22,
-                  109,
-                  84,
-                  97,
-                  252,
-                  22,
-                  20,
-                  59,
-                  1,
-                  116,
-                  88,
-                  174
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "value",
-          "type": "u8"
-        }
-      ]
     },
     {
       "name": "topup",
