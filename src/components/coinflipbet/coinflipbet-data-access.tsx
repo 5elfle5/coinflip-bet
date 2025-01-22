@@ -128,21 +128,10 @@ export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }
     },
   })
 
-  const setMutation = useMutation({
-    mutationKey: ['coinflipbet', 'set', { cluster, account }],
-    //topup should be accessible to end user
-    mutationFn: (value: number) => program.methods.topup(value).accounts({ payer: account }).rpc(),
-    onSuccess: (tx) => {
-      transactionToast(tx)
-      return accountQuery.refetch()
-    },
-  })
-
   return {
     accountQuery,
     closeMutation,
     decrementMutation,
     incrementMutation,
-    setMutation,
   }
 }

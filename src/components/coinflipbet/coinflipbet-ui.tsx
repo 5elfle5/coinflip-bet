@@ -61,7 +61,7 @@ export function CoinflipbetList() {
 }
 
 function CoinflipbetCard({ account }: { account: PublicKey }) {
-  const { accountQuery, incrementMutation, setMutation, decrementMutation, closeMutation } = useCoinflipbetProgramAccount({
+  const { accountQuery, incrementMutation, decrementMutation, closeMutation } = useCoinflipbetProgramAccount({
     account,
   });
 
@@ -83,15 +83,6 @@ function CoinflipbetCard({ account }: { account: PublicKey }) {
               disabled={incrementMutation.isPending}
             >
               Bet
-            </button>
-            <button
-              className="btn btn-xs lg:btn-md btn-outline"
-              onClick={() => {
-                return setMutation.mutateAsync(10)
-              }}
-              disabled={setMutation.isPending}
-            >
-              Set
             </button>
             <button
               className="btn btn-xs lg:btn-md btn-outline"
