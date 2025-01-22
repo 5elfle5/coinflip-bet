@@ -4,6 +4,7 @@ import { useParams } from 'react-router'
 import { ExplorerLink } from '../cluster/cluster-ui'
 import { AppHero, ellipsify } from '../ui/ui-layout'
 import { AccountBalance, AccountButtons } from './account-ui'
+import CoinflipbetFeature from '../coinflipbet/coinflipbet-feature'
 
 export default function AccountDetailFeature() {
   const params = useParams() as { address?: string }
@@ -31,10 +32,8 @@ export default function AccountDetailFeature() {
           </div>
         }
       >
-        <div className="my-4">
-          <AccountButtons address={address} />
-        </div>
       </AppHero>
+      <CoinflipbetFeature></CoinflipbetFeature>
     </div>
   )
 }

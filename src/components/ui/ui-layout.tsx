@@ -1,7 +1,6 @@
 import { ReactNode, Suspense, useEffect, useRef } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 import { Link, useLocation } from 'react-router-dom'
-
 import { AccountChecker } from '../account/account-ui'
 import { ClusterChecker, ClusterUiSelect, ExplorerLink } from '../cluster/cluster-ui'
 import { WalletButton } from '../solana/solana-provider'
@@ -125,10 +124,10 @@ export function AppHero({
   subtitle: ReactNode
 }) {
   return (
-    <div className="hero py-[64px]">
+    <div className="hero">
       <div className="hero-content text-center">
         <div className="max-w-2xl">
-          {typeof title === 'string' ? <h1 className="text-5xl font-bold">{title}</h1> : title}
+          {typeof title === 'string' ? <h1 className="text-3xl font-bold">{title}</h1> : title}
           {typeof subtitle === 'string' ? <p className="py-6">{subtitle}</p> : subtitle}
           {children}
         </div>
