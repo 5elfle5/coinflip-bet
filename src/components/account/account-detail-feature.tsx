@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { useParams } from 'react-router'
 import { ExplorerLink } from '../cluster/cluster-ui'
 import { AppHero, ellipsify } from '../ui/ui-layout'
-import { AccountBalance, AccountButtons } from './account-ui'
+import { AccountBalance } from './account-ui'
 import CoinflipbetFeature from '../coinflipbet/coinflipbet-feature'
 
 export default function AccountDetailFeature() {

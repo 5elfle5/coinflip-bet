@@ -5,11 +5,9 @@ import {
   PublicKey,
   SystemProgram,
   TransactionMessage,
-  TransactionSignature,
   VersionedTransaction,
 } from '@solana/web3.js'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import toast from 'react-hot-toast'
 import { useTransactionToast } from '../ui/ui-layout'
 
 export function useGetBalance({ address }: { address: PublicKey }) {
@@ -18,57 +16,6 @@ export function useGetBalance({ address }: { address: PublicKey }) {
   return useQuery({
     queryKey: ['get-balance', { endpoint: connection.rpcEndpoint, address }],
     queryFn: () => connection.getBalance(address),
-  })
-}
-
-export function useTransferSol({ address }: { address: PublicKey }) {
-  const { connection } = useConnection()
-  const transactionToast = useTransactionToast()
-  const wallet = useWallet()
-  const client = useQueryClient()
-
-  return useMutation({
-    mutationKey: ['transfer-sol', { endpoint: connection.rpcEndpoint, address }],
-    mutationFn: async (input: { destination: PublicKey; amount: number }) => {
-      let signature: TransactionSignature = ''
-      try {
-        const { transaction, latestBlockhash } = await createTransaction({
-          publicKey: address,
-          destination: input.destination,
-          amount: input.amount,
-          connection,
-        })
-
-        // Send transaction and await for signature
-        signature = await wallet.sendTransaction(transaction, connection)
-
-        // Send transaction and await for signature
-        await connection.confirmTransaction({ signature, ...latestBlockhash }, 'confirmed')
-
-        console.log(signature)
-        return signature
-      } catch (error: unknown) {
-        console.log('error', `Transaction failed! ${error}`, signature)
-
-        return
-      }
-    },
-    onSuccess: (signature) => {
-      if (signature) {
-        transactionToast(signature)
-      }
-      return Promise.all([
-        client.invalidateQueries({
-          queryKey: ['get-balance', { endpoint: connection.rpcEndpoint, address }],
-        }),
-        client.invalidateQueries({
-          queryKey: ['get-signatures', { endpoint: connection.rpcEndpoint, address }],
-        }),
-      ])
-    },
-    onError: (error) => {
-      toast.error(`Transaction failed! ${error}`)
-    },
   })
 }
 
