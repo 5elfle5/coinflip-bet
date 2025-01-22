@@ -66,14 +66,23 @@ pub mod coinflipbet {
   }
 
   pub fn flip(ctx: Context<Update>, amount: u64) -> Result<()> {
-    // let user_account = ctx.accounts.payer.clone();
-    // let wager_account = ctx.accounts.wager.clone();
-    // **wager_account.to_account_info().lamports.borrow_mut() -= amount;
-    // **user_account.to_account_info().lamports.borrow_mut() += amount;
-    let bankroll_account = ctx.accounts.bankroll.clone();
-    let wager_account = ctx.accounts.wager.clone();
-    **wager_account.to_account_info().lamports.borrow_mut() -= amount;
-    **bankroll_account.to_account_info().lamports.borrow_mut() += amount;
+    let result = &mut ctx.accounts.wager;
+    let timestamp = Clock::get()?.unix_timestamp;
+    let roll = ((timestamp + 7789) * 997) % 100;
+    let won = roll < 49;
+    result.roll = roll;
+    result.won = won;
+    if won {
+      let user_account = ctx.accounts.payer.clone();
+      let wager_account = ctx.accounts.wager.clone();
+      **wager_account.to_account_info().lamports.borrow_mut() -= amount;
+      **user_account.to_account_info().lamports.borrow_mut() += amount;
+    } else {
+      let bankroll_account = ctx.accounts.bankroll.clone();
+      let wager_account = ctx.accounts.wager.clone();
+      **wager_account.to_account_info().lamports.borrow_mut() -= amount;
+      **bankroll_account.to_account_info().lamports.borrow_mut() += amount;
+    }
     Ok(())
   }
 }

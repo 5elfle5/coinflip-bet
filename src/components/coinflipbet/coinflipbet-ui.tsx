@@ -56,7 +56,7 @@ function CoinflipbetCard({ account }: { account: PublicKey }) {
     account,
   });
 
-  const count = useMemo(() => accountQuery.data?.roll ?? 0, [accountQuery.data?.roll])
+  const count = useMemo(() => accountQuery.data?.won.toString(), [accountQuery.data?.won.toString()])
 
   return accountQuery.isLoading ? (
     <span className="loading loading-spinner loading-lg"></span>

@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 #[account]
 #[derive(InitSpace)]
 pub struct Wager {
-  pub roll: u32,
+  pub roll: i64,
   pub won: bool,
   pub bet_on_side: u8,
   pub count: u8,

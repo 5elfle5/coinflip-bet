@@ -484,7 +484,7 @@ export type Coinflipbet = {
         "fields": [
           {
             "name": "roll",
-            "type": "u32"
+            "type": "i64"
           },
           {
             "name": "won",
