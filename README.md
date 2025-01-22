@@ -32,7 +32,7 @@
 
 `npm install`
 
-### run
+### run:
 
 `npm run anchor-localnet`
 
