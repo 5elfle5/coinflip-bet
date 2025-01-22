@@ -5,16 +5,18 @@ import { ellipsify } from '../ui/ui-layout'
 import { useCoinflipbetProgram, useCoinflipbetProgramAccount } from './coinflipbet-data-access'
 
 export function CoinflipbetCreate() {
-  const { initialize } = useCoinflipbetProgram()
+  const { createWager } = useCoinflipbetProgram()
 
   return (
-    <button
-      className="btn btn-xs lg:btn-md btn-primary"
-      onClick={() => initialize.mutateAsync()}
-      disabled={initialize.isPending}
-    >
-      Create {initialize.isPending && '...'}
-    </button>
+    <div>
+      <button
+        className="btn btn-xs lg:btn-md btn-primary"
+        onClick={() => createWager.mutateAsync()}
+        disabled={createWager.isPending}
+      >
+        Create {createWager.isPending && '...'}
+      </button>
+    </div>
   )
 }
 

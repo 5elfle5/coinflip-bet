@@ -30,7 +30,7 @@ export function useCoinflipbetProgram() {
   })
 
   const createWager = useMutation({
-    mutationKey: ['coinflipbet', 'initialize', { cluster }],
+    mutationKey: ['wager', 'create', { cluster }],
     mutationFn: () => {
       return program.methods.createWager().accounts({
         payer,
@@ -48,7 +48,7 @@ export function useCoinflipbetProgram() {
     programId,
     accounts,
     getProgramAccount,
-    initialize: createWager,
+    createWager,
   }
 }
 
