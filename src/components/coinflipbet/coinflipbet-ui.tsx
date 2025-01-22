@@ -4,7 +4,7 @@ import { ExplorerLink } from '../cluster/cluster-ui'
 import { ellipsify } from '../ui/ui-layout'
 import { useCoinflipbetProgram, useCoinflipbetProgramAccount } from './coinflipbet-data-access'
 
-export function CoinflipbetCreate() {
+export function Wager() {
   const { createWager, closeWager } = useCoinflipbetProgram()
 
   return (
@@ -27,7 +27,7 @@ export function CoinflipbetCreate() {
   )
 }
 
-export function CoinflipbetList() {
+export function CoinflipBet() {
   const { accounts, getProgramAccount } = useCoinflipbetProgram()
 
   if (getProgramAccount.isLoading) {
