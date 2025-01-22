@@ -16,6 +16,10 @@ pub mod coinflipbet {
     Ok(())
   }
 
+  pub fn close_bankroll(_ctx: Context<CloseBankroll>) -> Result<()> {
+    Ok(())
+  }
+
   pub fn create_wager(_ctx: Context<CreateWager>) -> Result<()> {
     Ok(())
   }

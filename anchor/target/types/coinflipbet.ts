@@ -106,6 +106,31 @@ export type Coinflipbet = {
       ]
     },
     {
+      "name": "closeBankroll",
+      "discriminator": [
+        135,
+        175,
+        162,
+        2,
+        207,
+        136,
+        224,
+        85
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "bankroll",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "closeWager",
       "discriminator": [
         167,

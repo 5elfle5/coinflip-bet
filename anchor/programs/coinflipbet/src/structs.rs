@@ -61,6 +61,18 @@ pub struct CloseWager<'info> {
 }
 
 #[derive(Accounts)]
+pub struct CloseBankroll<'info> {
+  #[account(mut)]
+  pub payer: Signer<'info>,
+
+  #[account(
+  mut,
+  close = payer,
+  )]
+  pub bankroll: Account<'info, Bankroll>,
+}
+
+#[derive(Accounts)]
 pub struct Update<'info> {
   #[account(mut)]
   pub payer: Signer<'info>,
