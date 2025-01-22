@@ -2,10 +2,10 @@ import { PublicKey } from '@solana/web3.js'
 import { useMemo } from 'react'
 import { ExplorerLink } from '../cluster/cluster-ui'
 import { ellipsify } from '../ui/ui-layout'
-import { useCoinflipbetProgram, useCoinflipbetProgramAccount } from './coinflipbet-data-access'
+import { useWager, useCoinflipbetProgramAccount as useCoinFlip } from './coinflipbet-data-access'
 
 export function Wager() {
-  const { createWager, closeWager } = useCoinflipbetProgram()
+  const { createWager, closeWager } = useWager()
 
   return (
     <div>
@@ -28,7 +28,7 @@ export function Wager() {
 }
 
 export function CoinflipBet() {
-  const { accounts, getProgramAccount } = useCoinflipbetProgram()
+  const { accounts, getProgramAccount } = useWager()
 
   if (getProgramAccount.isLoading) {
     return <span className="loading loading-spinner loading-lg"></span>
@@ -61,7 +61,7 @@ export function CoinflipBet() {
 }
 
 function CoinflipbetCard({ account }: { account: PublicKey }) {
-  const { accountQuery, incrementMutation, decrementMutation, closeMutation } = useCoinflipbetProgramAccount({
+  const { accountQuery, betMutation, flipMutation, closeMutation } = useCoinFlip({
     account,
   });
 
@@ -79,15 +79,15 @@ function CoinflipbetCard({ account }: { account: PublicKey }) {
           <div className="card-actions justify-around">
             <button
               className="btn btn-xs lg:btn-md btn-outline"
-              onClick={() => incrementMutation.mutateAsync()}
-              disabled={incrementMutation.isPending}
+              onClick={() => betMutation.mutateAsync()}
+              disabled={betMutation.isPending}
             >
               Bet
             </button>
             <button
               className="btn btn-xs lg:btn-md btn-outline"
-              onClick={() => decrementMutation.mutateAsync()}
-              disabled={decrementMutation.isPending}
+              onClick={() => flipMutation.mutateAsync()}
+              disabled={flipMutation.isPending}
             >
               Flip
             </button>

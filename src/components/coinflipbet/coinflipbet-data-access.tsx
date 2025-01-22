@@ -10,7 +10,7 @@ import { useAnchorProvider } from '../solana/solana-provider'
 import { useTransactionToast } from '../ui/ui-layout'
 import { BN } from '@coral-xyz/anchor'
 
-export function useCoinflipbetProgram() {
+export function useWager() {
   const payer = useWallet()?.publicKey ?? Keypair.generate().publicKey;
   const { connection } = useConnection()
   const { cluster } = useCluster()
@@ -75,17 +75,17 @@ export function useCoinflipbetProgram() {
 export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }) {
   const { cluster } = useCluster();
   const transactionToast = useTransactionToast();
-  const { program, accounts } = useCoinflipbetProgram();
+  const { program, accounts } = useWager();
   const wallet = useWallet()
   const payer = wallet.publicKey ?? Keypair.generate().publicKey;
 
   const accountQuery = useQuery({
-    queryKey: ['coinflipbet', 'fetch', { cluster, account }],
+    queryKey: ['wager', 'fetch', { cluster, account }],
     queryFn: () => program.account.wager.fetch(account),
   })
 
   const closeMutation = useMutation({
-    mutationKey: ['coinflipbet', 'close', { cluster, account }],
+    mutationKey: ['wager', 'close', { cluster, account }],
     mutationFn: () => program.methods.closeWager().accounts({ wager: account }).rpc(),
     onSuccess: (tx) => {
       transactionToast(tx)
@@ -93,8 +93,8 @@ export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }
     },
   })
 
-  const decrementMutation = useMutation({
-    mutationKey: ['coinflipbet', 'decrement', { cluster, account }],
+  const flipMutation = useMutation({
+    mutationKey: ['coin', 'flip', { cluster, account }],
     mutationFn: () => {
       const [wager,] = PublicKey.findProgramAddressSync(
         [Buffer.from('wager'), payer.toBuffer()],
@@ -110,8 +110,8 @@ export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }
     },
   })
 
-  const incrementMutation = useMutation({
-    mutationKey: ['coinflipbet', 'increment', { cluster, account }],
+  const betMutation = useMutation({
+    mutationKey: ['coin', 'bet', { cluster, account }],
     mutationFn: () => {
       const [wager,] = PublicKey.findProgramAddressSync(
         [Buffer.from('wager'), payer.toBuffer()],
@@ -131,7 +131,7 @@ export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }
   return {
     accountQuery,
     closeMutation,
-    decrementMutation,
-    incrementMutation,
+    flipMutation,
+    betMutation,
   }
 }

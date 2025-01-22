@@ -2,12 +2,12 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { ExplorerLink } from '../cluster/cluster-ui'
 import { WalletButton } from '../solana/solana-provider'
 import { AppHero, ellipsify } from '../ui/ui-layout'
-import { useCoinflipbetProgram } from './coinflipbet-data-access'
+import { useWager } from './coinflipbet-data-access'
 import { Wager, CoinflipBet } from './coinflipbet-ui'
 
 export default function CoinflipbetFeature() {
   const { publicKey } = useWallet()
-  const { programId } = useCoinflipbetProgram()
+  const { programId } = useWager()
 
   return publicKey ? (
     <div>
