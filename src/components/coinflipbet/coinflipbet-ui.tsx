@@ -47,7 +47,7 @@ export function CoinflipBet() {
       ) : accounts.data?.length ? (
         <div className="grid md:grid-cols-2 gap-4">
           {accounts.data?.map((account) => (
-            <CoinflipbetCard key={account.publicKey.toString()} account={account.publicKey} />
+            <CoinflipCard key={account.publicKey.toString()} account={account.publicKey} />
           ))}
         </div>
       ) : (
@@ -60,7 +60,7 @@ export function CoinflipBet() {
   )
 }
 
-function CoinflipbetCard({ account }: { account: PublicKey }) {
+function CoinflipCard({ account }: { account: PublicKey }) {
   const { accountQuery, betMutation, flipMutation, closeMutation } = useCoinFlip({
     account,
   });
