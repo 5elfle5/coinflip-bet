@@ -23,13 +23,13 @@ const main = async () => {
   console.log('initialized bankroll');
 
   await program.methods
-    .topup(new BN(1000000000))
+    .topup(new BN(2000000000))
     .accounts({
       payer: wallet.publicKey
     })
     .signers([keypair])
     .rpc();
-  console.log('added 1 SOL to bankroll');
+  console.log('added 2 SOL to bankroll');
 };
 
 main().catch((err) => console.error("An error occurred:", err));
