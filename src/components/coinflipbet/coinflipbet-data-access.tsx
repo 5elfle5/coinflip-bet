@@ -43,12 +43,32 @@ export function useCoinflipbetProgram() {
     onError: (e) => toast.error(JSON.stringify(e)),
   })
 
+  const closeWager = useMutation({
+    mutationKey: ['wager', 'close', { cluster }],
+    mutationFn: () => {
+      const [wager,] = PublicKey.findProgramAddressSync(
+        [Buffer.from('wager'), payer.toBuffer()],
+        program.programId
+      );
+      return program.methods.closeWager().accounts({
+        payer,
+        wager
+      }).rpc();
+    },
+    onSuccess: (signature) => {
+      transactionToast(signature)
+      return accounts.refetch()
+    },
+    onError: (e) => toast.error(JSON.stringify(e)),
+  })
+
   return {
     program,
     programId,
     accounts,
     getProgramAccount,
     createWager,
+    closeWager
   }
 }
 
