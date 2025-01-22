@@ -1,4 +1,4 @@
-import { ReactNode, Suspense, useEffect, useRef } from 'react'
+import { ReactNode, Suspense } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 import { Link, useLocation } from 'react-router-dom'
 import { AccountChecker } from '../account/account-ui'
