@@ -1,10 +1,7 @@
 import { useConnection } from '@solana/wallet-adapter-react'
-import { Connection } from '@solana/web3.js'
-import { IconTrash } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
-import { ReactNode, useState } from 'react'
-import { AppModal } from '../ui/ui-layout'
-import { ClusterNetwork, useCluster } from './cluster-data-access'
+import { ReactNode } from 'react'
+import { useCluster } from './cluster-data-access'
 
 export function ExplorerLink({ path, label, className }: { path: string; label: string; className?: string }) {
   const { getExplorerUrl } = useCluster()
