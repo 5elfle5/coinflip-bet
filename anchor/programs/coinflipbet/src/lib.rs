@@ -52,17 +52,11 @@ pub mod coinflipbet {
         to: to_pubkey.clone(),
       },
     );
-
     transfer(user_transaction_context, amount)?;
-    
-
     let from_pda = ctx.accounts.bankroll.clone();
     let to_account = ctx.accounts.wager.clone();
     **from_pda.to_account_info().lamports.borrow_mut() -= amount;
     **to_account.to_account_info().lamports.borrow_mut() += amount;
-
-
-
     ctx.accounts.wager.count = ctx.accounts.wager.count.checked_add(1).unwrap();
     ctx.accounts.wager.won = false;
     ctx.accounts.wager.bet_on_side = 1;
