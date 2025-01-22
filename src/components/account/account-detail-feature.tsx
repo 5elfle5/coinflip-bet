@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { useParams } from 'react-router'
 import { ExplorerLink } from '../cluster/cluster-ui'
 import { AppHero, ellipsify } from '../ui/ui-layout'
-import { AccountBalance, AccountButtons, AccountTokens } from './account-ui'
+import { AccountBalance, AccountButtons } from './account-ui'
 
 export default function AccountDetailFeature() {
   const params = useParams() as { address?: string }
@@ -35,9 +35,6 @@ export default function AccountDetailFeature() {
           <AccountButtons address={address} />
         </div>
       </AppHero>
-      <div className="space-y-8">
-        <AccountTokens address={address} />
-      </div>
     </div>
   )
 }
