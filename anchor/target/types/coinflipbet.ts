@@ -27,11 +27,83 @@ export type Coinflipbet = {
       ],
       "accounts": [
         {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
           "name": "wager",
           "writable": true
+        },
+        {
+          "name": "bankroll",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  97,
+                  110,
+                  107,
+                  114,
+                  111,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  9,
+                  43,
+                  225,
+                  230,
+                  237,
+                  13,
+                  216,
+                  237,
+                  44,
+                  121,
+                  170,
+                  202,
+                  171,
+                  13,
+                  123,
+                  122,
+                  17,
+                  76,
+                  28,
+                  165,
+                  22,
+                  109,
+                  84,
+                  97,
+                  252,
+                  22,
+                  20,
+                  59,
+                  1,
+                  116,
+                  88,
+                  174
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
     },
     {
       "name": "close",
@@ -104,94 +176,6 @@ export type Coinflipbet = {
         }
       ],
       "args": []
-    },
-    {
-      "name": "decrement",
-      "discriminator": [
-        106,
-        227,
-        168,
-        59,
-        248,
-        27,
-        150,
-        101
-      ],
-      "accounts": [
-        {
-          "name": "payer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "bankroll",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  98,
-                  97,
-                  110,
-                  107,
-                  114,
-                  111,
-                  108,
-                  108
-                ]
-              },
-              {
-                "kind": "const",
-                "value": [
-                  9,
-                  43,
-                  225,
-                  230,
-                  237,
-                  13,
-                  216,
-                  237,
-                  44,
-                  121,
-                  170,
-                  202,
-                  171,
-                  13,
-                  123,
-                  122,
-                  17,
-                  76,
-                  28,
-                  165,
-                  22,
-                  109,
-                  84,
-                  97,
-                  252,
-                  22,
-                  20,
-                  59,
-                  1,
-                  116,
-                  88,
-                  174
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "amount",
-          "type": "u64"
-        }
-      ]
     },
     {
       "name": "initialize",
@@ -290,14 +274,169 @@ export type Coinflipbet = {
       ],
       "accounts": [
         {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
           "name": "wager",
           "writable": true
+        },
+        {
+          "name": "bankroll",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  97,
+                  110,
+                  107,
+                  114,
+                  111,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  9,
+                  43,
+                  225,
+                  230,
+                  237,
+                  13,
+                  216,
+                  237,
+                  44,
+                  121,
+                  170,
+                  202,
+                  171,
+                  13,
+                  123,
+                  122,
+                  17,
+                  76,
+                  28,
+                  165,
+                  22,
+                  109,
+                  84,
+                  97,
+                  252,
+                  22,
+                  20,
+                  59,
+                  1,
+                  116,
+                  88,
+                  174
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
           "name": "value",
           "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "topup",
+      "discriminator": [
+        126,
+        42,
+        49,
+        78,
+        225,
+        151,
+        99,
+        77
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "bankroll",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  97,
+                  110,
+                  107,
+                  114,
+                  111,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  9,
+                  43,
+                  225,
+                  230,
+                  237,
+                  13,
+                  216,
+                  237,
+                  44,
+                  121,
+                  170,
+                  202,
+                  171,
+                  13,
+                  123,
+                  122,
+                  17,
+                  76,
+                  28,
+                  165,
+                  22,
+                  109,
+                  84,
+                  97,
+                  252,
+                  22,
+                  20,
+                  59,
+                  1,
+                  116,
+                  88,
+                  174
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
         }
       ]
     }

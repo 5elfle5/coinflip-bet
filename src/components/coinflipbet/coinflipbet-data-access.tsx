@@ -8,6 +8,7 @@ import toast from 'react-hot-toast'
 import { useCluster } from '../cluster/cluster-data-access'
 import { useAnchorProvider } from '../solana/solana-provider'
 import { useTransactionToast } from '../ui/ui-layout'
+import { BN } from '@coral-xyz/anchor'
 
 export function useCoinflipbetProgram() {
   const payer = useWallet()?.publicKey ?? Keypair.generate().publicKey;
@@ -52,9 +53,11 @@ export function useCoinflipbetProgram() {
 }
 
 export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }) {
-  const { cluster } = useCluster()
-  const transactionToast = useTransactionToast()
-  const { program, accounts } = useCoinflipbetProgram()
+  const { cluster } = useCluster();
+  const transactionToast = useTransactionToast();
+  const { program, accounts } = useCoinflipbetProgram();
+  const wallet = useWallet()
+  const payer = wallet.publicKey ?? Keypair.generate().publicKey;
 
   const accountQuery = useQuery({
     queryKey: ['coinflipbet', 'fetch', { cluster, account }],
@@ -72,7 +75,8 @@ export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }
 
   const decrementMutation = useMutation({
     mutationKey: ['coinflipbet', 'decrement', { cluster, account }],
-    mutationFn: () => program.methods.decrement().accounts({ wager: account }).rpc(),
+    //topup should be accessible to end user
+    mutationFn: () => program.methods.topup(new BN(1000000)).accounts({ payer: account }).rpc(),
     onSuccess: (tx) => {
       transactionToast(tx)
       return accountQuery.refetch()
@@ -81,7 +85,16 @@ export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }
 
   const incrementMutation = useMutation({
     mutationKey: ['coinflipbet', 'increment', { cluster, account }],
-    mutationFn: () => program.methods.bet().accounts({ wager: account }).rpc(),
+    mutationFn: () => {
+      const [wager,] = PublicKey.findProgramAddressSync(
+        [Buffer.from('wager'), payer.toBuffer()],
+        program.programId
+      );
+
+      return program.methods.bet(new BN(100000000))
+        .accounts({ payer, wager })
+        .rpc();
+    },
     onSuccess: (tx) => {
       transactionToast(tx)
       return accountQuery.refetch()
@@ -90,7 +103,8 @@ export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }
 
   const setMutation = useMutation({
     mutationKey: ['coinflipbet', 'set', { cluster, account }],
-    mutationFn: (value: number) => program.methods.set(value).accounts({ wager: account }).rpc(),
+    //topup should be accessible to end user
+    mutationFn: (value: number) => program.methods.topup(value).accounts({ payer: account }).rpc(),
     onSuccess: (tx) => {
       transactionToast(tx)
       return accountQuery.refetch()

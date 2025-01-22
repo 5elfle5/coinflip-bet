@@ -14,18 +14,15 @@ const main = async () => {
   const provider = new AnchorProvider(connection, wallet, { commitment: 'confirmed' });
   setProvider(provider);
   const program = new Program(idl as Coinflipbet, provider);
-  const [bankroll,] = PublicKey.findProgramAddressSync(
-    [Buffer.from("bankroll"), new PublicKey(idl.address).toBuffer()],
-    program.programId
-  );
 
   await program.methods
-    .decrement(new BN(1000000000))
+    .topup(new BN(1000000000))
     .accounts({
       payer: wallet.publicKey
     })
     .signers([keypair])
     .rpc();
+  console.log('added 1 SOL to bankroll');
 };
 
 main().catch((err) => console.error("An error occurred:", err));

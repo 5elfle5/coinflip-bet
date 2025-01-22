@@ -24,24 +24,52 @@ pub mod coinflipbet {
     Ok(())
   }
 
-  pub fn decrement(ctx: Context<UpdateBankroll>, amount: u64) -> Result<()> {
+  pub fn topup(ctx: Context<UpdateBankroll>, amount: u64) -> Result<()> {
     let from_pubkey = ctx.accounts.payer.to_account_info();
     let to_pubkey = ctx.accounts.bankroll.to_account_info();
     let program_id = ctx.accounts.system_program.to_account_info();
 
     let cpi_context = CpiContext::new(
-        program_id,
-        Transfer {
-            from: from_pubkey,
-            to: to_pubkey,
-        },
+      program_id,
+      Transfer {
+        from: from_pubkey,
+        to: to_pubkey,
+      },
     );
 
     transfer(cpi_context, amount)?;
     Ok(())
   }
 
-  pub fn bet(ctx: Context<Update>) -> Result<()> {
+  pub fn bet(ctx: Context<Update>, amount: u64) -> Result<()> {
+    let from_pubkey = ctx.accounts.payer.to_account_info();
+    let to_pubkey = ctx.accounts.wager.to_account_info();
+    let program_id = ctx.accounts.system_program.to_account_info();
+    let user_transaction_context = CpiContext::new(
+      program_id.clone(),
+      Transfer {
+        from: from_pubkey,
+        to: to_pubkey.clone(),
+      },
+    );
+
+    transfer(user_transaction_context, amount)?;
+
+    // let seeds = &[b"bankroll", crate::ID.as_ref(), &[ctx.bumps.bankroll]];
+    // let signer_seeds = &[&seeds[..]];
+
+    // let casino_pubkey = ctx.accounts.bankroll.to_account_info();
+    // let casino_transaction_context = CpiContext::new_with_signer(
+    //   program_id,
+    //   Transfer {
+    //       from: casino_pubkey,
+    //       to: to_pubkey,
+    //   },
+    //   signer_seeds
+    // );
+
+    // transfer(casino_transaction_context, amount)?;
+
     ctx.accounts.wager.count = ctx.accounts.wager.count.checked_add(1).unwrap();
     ctx.accounts.wager.won = false;
     ctx.accounts.wager.bet_on_side = 1;

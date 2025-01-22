@@ -63,7 +63,19 @@ pub struct CloseCoinflipbet<'info> {
 #[derive(Accounts)]
 pub struct Update<'info> {
   #[account(mut)]
+  pub payer: Signer<'info>,
+
+  #[account(mut)]
   pub wager: Account<'info, Wager>,
+
+  #[account(
+  mut,
+  seeds = [b"bankroll", crate::ID.as_ref()],
+  bump
+  )]
+  pub bankroll: Account<'info, Bankroll>,
+
+  pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
