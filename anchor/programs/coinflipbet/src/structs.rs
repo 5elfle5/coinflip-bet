@@ -40,7 +40,7 @@ pub struct InitializeBankroll<'info> {
   init,
   space = 8 + 8,
   payer = payer,
-  seeds = [b"bankroll", payer.key().as_ref()],
+  seeds = [b"bankroll", crate::ID.as_ref()],
   bump
   )]
   pub bankroll: Account<'info, Bankroll>,
@@ -71,7 +71,11 @@ pub struct UpdateBankroll<'info> {
   #[account(mut)]
   pub payer: Signer<'info>,
 
-  #[account(mut)]
+  #[account(
+  mut,
+  seeds = [b"bankroll", crate::ID.as_ref()],
+  bump
+  )]
   pub bankroll: Account<'info, Bankroll>,
 
   pub system_program: Program<'info, System>,

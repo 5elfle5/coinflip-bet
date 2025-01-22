@@ -15,14 +15,14 @@ const main = async () => {
   setProvider(provider);
   const program = new Program(idl as Coinflipbet, provider);
   const [bankroll,] = PublicKey.findProgramAddressSync(
-    [Buffer.from("bankroll"), wallet.publicKey.toBuffer()],
+    [Buffer.from("bankroll"), new PublicKey(idl.address).toBuffer()],
     program.programId
   );
 
   await program.methods
     .decrement(new BN(1000000000))
     .accounts({
-      bankroll
+      payer: wallet.publicKey
     })
     .signers([keypair])
     .rpc();
