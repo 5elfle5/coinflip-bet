@@ -18,11 +18,21 @@ install:
 
 `corepack prepare pnpm@9 --activate`
 
-- run
+- install ts-node
+
+`npm i -g ts-node`
+
+- install & build
 
 `pnpm install`
 
 `pnpm build`
+
+`cd init-script`
+
+`npm install`
+
+- run
 
 `npm run anchor-localnet`
 
@@ -34,5 +44,10 @@ add
 to .bashrc (or .zshrc if you use zsh))
 
 in an other tab do
+
+`solana airdrop 3 8rAzBfiAhTseoJZGyfijc4WFWFwTvZfgBXtNNDaX5qP7`
+(this is the pubkey for the keys inside init-script, you can generate your own keys)
+
+`ts-node init-script/src/init.ts`
 
 `npm run dev`
