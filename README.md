@@ -2,13 +2,13 @@
 
 ## How to run:
 
-### Prerequisites:
+### install:
 
-install:
+- node,
+- rust+solana+anchor like here (https://solana.com/docs/intro/installation)
+- phantom wallet chrome extension
 
-* node,
-* rust+solana+anchor like here (https://solana.com/docs/intro/installation)
-* phantom wallet chrome extension
+### prepare solana & pnpm:
 
 - create solana keys
 - set solana cluster to local
@@ -32,7 +32,7 @@ install:
 
 `npm install`
 
-- run
+### run
 
 `npm run anchor-localnet`
 
