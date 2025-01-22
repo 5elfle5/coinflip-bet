@@ -20,7 +20,7 @@ pub mod coinflipbet {
     Ok(())
   }
 
-  pub fn close(_ctx: Context<CloseCoinflipbet>) -> Result<()> {
+  pub fn close_wager(_ctx: Context<CloseWager>) -> Result<()> {
     Ok(())
   }
 

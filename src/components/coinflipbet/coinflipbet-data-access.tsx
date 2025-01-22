@@ -66,7 +66,7 @@ export function useCoinflipbetProgramAccount({ account }: { account: PublicKey }
 
   const closeMutation = useMutation({
     mutationKey: ['coinflipbet', 'close', { cluster, account }],
-    mutationFn: () => program.methods.close().accounts({ wager: account }).rpc(),
+    mutationFn: () => program.methods.closeWager().accounts({ wager: account }).rpc(),
     onSuccess: (tx) => {
       transactionToast(tx)
       return accounts.refetch()

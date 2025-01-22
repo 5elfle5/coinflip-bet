@@ -106,16 +106,16 @@ export type Coinflipbet = {
       ]
     },
     {
-      "name": "close",
+      "name": "closeWager",
       "discriminator": [
-        98,
-        165,
-        201,
-        177,
-        108,
-        65,
-        206,
-        96
+        167,
+        240,
+        85,
+        147,
+        127,
+        50,
+        69,
+        203
       ],
       "accounts": [
         {

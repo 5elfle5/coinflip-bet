@@ -78,11 +78,7 @@ function CoinflipbetCard({ account }: { account: PublicKey }) {
             <button
               className="btn btn-xs lg:btn-md btn-outline"
               onClick={() => {
-                const value = window.prompt('Set value to:', count.toString() ?? '0')
-                if (!value || parseInt(value) === count || isNaN(parseInt(value))) {
-                  return
-                }
-                return setMutation.mutateAsync(parseInt(value))
+                return setMutation.mutateAsync(10)
               }}
               disabled={setMutation.isPending}
             >

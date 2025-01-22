@@ -49,7 +49,7 @@ pub struct InitializeBankroll<'info> {
 }
 
 #[derive(Accounts)]
-pub struct CloseCoinflipbet<'info> {
+pub struct CloseWager<'info> {
   #[account(mut)]
   pub payer: Signer<'info>,
 
