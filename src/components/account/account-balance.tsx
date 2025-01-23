@@ -1,5 +1,6 @@
-import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js'
+import { PublicKey } from '@solana/web3.js'
 import { useGetBalance } from '@/custom-hooks/account/use-get-balance'
+import { BalanceSol } from './balance-sol'
 
 export function AccountBalance({ address }: { address: PublicKey }) {
   const query = useGetBalance({ address })
@@ -11,8 +12,4 @@ export function AccountBalance({ address }: { address: PublicKey }) {
       </h1>
     </div>
   )
-}
-
-function BalanceSol({ balance }: { balance: number }) {
-  return <span>{Math.round((balance / LAMPORTS_PER_SOL) * 100000) / 100000}</span>
 }

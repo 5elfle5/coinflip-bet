@@ -1,9 +1,10 @@
 import { useWallet } from '@solana/wallet-adapter-react'
-import { WalletButton } from '../solana/solana-provider'
 import { AppHero, ellipsify } from '../ui/ui-layout'
-import { useWager } from './coinflipbet-data-access'
-import { Wager, CoinflipBet } from './coinflipbet-ui'
+import { Wager } from './wager'
 import { ExplorerLink } from '../cluster/explorer-link'
+import { useWager } from '@/custom-hooks/coinflip/use-wager'
+import { CoinflipBet } from './coinflip-bet'
+import { WalletButton } from '@/constants/wallet-button'
 
 export default function CoinflipbetFeature() {
   const { publicKey } = useWallet()

@@ -1,6 +1,6 @@
+import { WalletButton } from '@/constants/wallet-button'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { Navigate } from 'react-router'
-import { WalletButton } from '../solana/solana-provider'
 
 export default function AccountListFeature() {
   const { publicKey } = useWallet()

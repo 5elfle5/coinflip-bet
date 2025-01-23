@@ -6,7 +6,7 @@ import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useCluster } from '@/custom-hooks/cluster/use-cluster'
 import { useTransactionToast } from '@/components/ui/ui-layout'
-import { useAnchorProvider } from '@/components/solana/solana-provider'
+import { useAnchorProvider } from '../solana/use-anchor-provider'
 
 export function useWager() {
   const payer = useWallet()?.publicKey ?? Keypair.generate().publicKey;
