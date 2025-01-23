@@ -1,7 +1,7 @@
+import { useCluster } from '@/custom-hooks/cluster/use-cluster'
 import { useConnection } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { ReactNode } from 'react'
-import { useCluster } from './cluster-data-access'
 
 export function ClusterChecker({ children }: { children: ReactNode }) {
   const { cluster } = useCluster()

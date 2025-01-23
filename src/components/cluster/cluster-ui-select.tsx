@@ -1,4 +1,4 @@
-import { useCluster } from './cluster-data-access'
+import { useCluster } from "@/custom-hooks/cluster/use-cluster"
 
 export function ClusterUiSelect() {
   const { clusters, setCluster, cluster } = useCluster()

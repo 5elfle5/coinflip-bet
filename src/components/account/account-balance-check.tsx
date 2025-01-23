@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js'
-import { useCluster } from '../cluster/cluster-data-access'
 import { useGetBalance } from '@/custom-hooks/account/use-get-balance'
 import { useRequestAirdrop } from '@/custom-hooks/account/use-request-airdrop'
+import { useCluster } from '@/custom-hooks/cluster/use-cluster'
 
 export function AccountBalanceCheck({ address }: { address: PublicKey }) {
   const { cluster } = useCluster()

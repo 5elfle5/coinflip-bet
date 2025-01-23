@@ -2,13 +2,12 @@ import { getCoinflipbetProgram, getCoinflipbetProgramId } from '@project/anchor'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { Cluster, Keypair, PublicKey } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
-
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
-import { useCluster } from '../cluster/cluster-data-access'
 import { useAnchorProvider } from '../solana/solana-provider'
 import { useTransactionToast } from '../ui/ui-layout'
 import { BN } from '@coral-xyz/anchor'
+import { useCluster } from '@/custom-hooks/cluster/use-cluster'
 
 export function useWager() {
   const payer = useWallet()?.publicKey ?? Keypair.generate().publicKey;

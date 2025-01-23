@@ -1,4 +1,4 @@
-import { useCluster } from "./cluster-data-access";
+import { useCluster } from "@/custom-hooks/cluster/use-cluster";
 
 export function ExplorerLink({ path, label, className }: { path: string; label: string; className?: string }) {
   const { getExplorerUrl } = useCluster()

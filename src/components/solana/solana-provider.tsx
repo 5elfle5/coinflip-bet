@@ -1,3 +1,4 @@
+import { useCluster } from '@/custom-hooks/cluster/use-cluster'
 import { AnchorProvider } from '@coral-xyz/anchor'
 import { WalletError } from '@solana/wallet-adapter-base'
 import {
@@ -9,7 +10,6 @@ import {
 } from '@solana/wallet-adapter-react'
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { ReactNode, useCallback, useMemo } from 'react'
-import { useCluster } from '../cluster/cluster-data-access'
 
 import('@solana/wallet-adapter-react-ui/styles.css')
 
