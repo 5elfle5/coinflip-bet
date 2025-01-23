@@ -1,5 +1,5 @@
-import { WalletButton } from '@/constants/wallet-button'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { Navigate } from 'react-router'
 
 export default function AccountListFeature() {
@@ -12,7 +12,7 @@ export default function AccountListFeature() {
   return (
     <div className="hero">
       <div className="hero-content text-center">
-        <WalletButton />
+        <WalletMultiButton />
       </div>
     </div>
   )

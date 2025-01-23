@@ -3,9 +3,9 @@ import { Wager } from './wager'
 import { ExplorerLink } from '../cluster/explorer-link'
 import { useWager } from '@/custom-hooks/coinflip/use-wager'
 import { CoinflipBet } from './coinflip-bet'
-import { WalletButton } from '@/constants/wallet-button'
 import { AppHero } from '../ui/app-hero'
 import { ellipsify } from '../ui/ellipsify'
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 
 export default function CoinflipbetFeature() {
   const { publicKey } = useWallet()
@@ -30,7 +30,7 @@ export default function CoinflipbetFeature() {
     <div className="max-w-4xl mx-auto">
       <div className="hero">
         <div className="hero-content text-center">
-          <WalletButton />
+          <WalletMultiButton />
         </div>
       </div>
     </div>
