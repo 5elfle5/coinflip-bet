@@ -1,10 +1,11 @@
 import { useWallet } from '@solana/wallet-adapter-react'
-import { AppHero, ellipsify } from '../ui/ui-layout'
 import { Wager } from './wager'
 import { ExplorerLink } from '../cluster/explorer-link'
 import { useWager } from '@/custom-hooks/coinflip/use-wager'
 import { CoinflipBet } from './coinflip-bet'
 import { WalletButton } from '@/constants/wallet-button'
+import { AppHero } from '../ui/app-hero'
+import { ellipsify } from '../ui/ellipsify'
 
 export default function CoinflipbetFeature() {
   const { publicKey } = useWallet()

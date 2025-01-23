@@ -3,8 +3,8 @@ import { Keypair, PublicKey } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { BN } from '@coral-xyz/anchor'
 import { useCluster } from '@/custom-hooks/cluster/use-cluster'
-import { useTransactionToast } from '@/components/ui/ui-layout'
 import { useWager } from './use-wager'
+import { useTransactionToast } from '../ui/use-transaction-toast'
 
 export function useCoinflip({ account }: { account: PublicKey }) {
   const { cluster } = useCluster();

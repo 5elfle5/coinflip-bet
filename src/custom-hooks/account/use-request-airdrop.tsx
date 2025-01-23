@@ -1,10 +1,10 @@
-import { useTransactionToast } from '@/components/ui/ui-layout'
 import { useConnection } from '@solana/wallet-adapter-react'
 import {
   LAMPORTS_PER_SOL,
   PublicKey,
 } from '@solana/web3.js'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTransactionToast } from '../ui/use-transaction-toast'
 
 export function useRequestAirdrop({ address }: { address: PublicKey }) {
   const { connection } = useConnection()

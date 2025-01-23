@@ -1,8 +1,8 @@
 import { PublicKey } from '@solana/web3.js'
 import { useMemo } from 'react'
-import { ellipsify } from '../ui/ui-layout'
 import { ExplorerLink } from '../cluster/explorer-link'
 import { useCoinflip } from '@/custom-hooks/coinflip/use-coinflip'
+import { ellipsify } from '../ui/ellipsify';
 
 export function CoinflipCard({ account }: { account: PublicKey }) {
   const { accountQuery, betMutation, flipMutation, closeMutation } = useCoinflip({

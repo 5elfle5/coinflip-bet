@@ -1,10 +1,11 @@
 import { PublicKey } from '@solana/web3.js'
 import { useMemo } from 'react'
 import { useParams } from 'react-router'
-import { AppHero, ellipsify } from '../ui/ui-layout'
 import CoinflipbetFeature from '../coinflipbet/coinflipbet-feature'
 import { AccountBalance } from './account-balance'
 import { ExplorerLink } from '../cluster/explorer-link'
+import { AppHero } from '../ui/app-hero'
+import { ellipsify } from '../ui/ellipsify'
 
 export default function AccountDetailFeature() {
   const params = useParams() as { address?: string }

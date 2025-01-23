@@ -5,8 +5,8 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useCluster } from '@/custom-hooks/cluster/use-cluster'
-import { useTransactionToast } from '@/components/ui/ui-layout'
 import { useAnchorProvider } from '../solana/use-anchor-provider'
+import { useTransactionToast } from '../ui/use-transaction-toast'
 
 export function useWager() {
   const payer = useWallet()?.publicKey ?? Keypair.generate().publicKey;

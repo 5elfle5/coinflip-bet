@@ -1,10 +1,9 @@
 import { ReactNode, Suspense } from 'react'
-import toast, { Toaster } from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 import { Link, useLocation } from 'react-router-dom'
 import { AccountChecker } from '../account/account-checker'
 import { ClusterUiSelect } from '../cluster/cluster-ui-select'
 import { ClusterChecker } from '../cluster/cluster-checker'
-import { ExplorerLink } from '../cluster/explorer-link'
 import { WalletButton } from '@/constants/wallet-button'
 
 export function UiLayout({ children, links }: { children: ReactNode; links: { label: string; path: string }[] }) {
@@ -64,44 +63,4 @@ export function UiLayout({ children, links }: { children: ReactNode; links: { la
       </footer>
     </div>
   )
-}
-
-export function AppHero({
-  children,
-  title,
-  subtitle,
-}: {
-  children?: ReactNode
-  title: ReactNode
-  subtitle: ReactNode
-}) {
-  return (
-    <div className="hero">
-      <div className="hero-content text-center">
-        <div className="max-w-2xl">
-          {typeof title === 'string' ? <h1 className="text-3xl font-bold">{title}</h1> : title}
-          {typeof subtitle === 'string' ? <p className="py-6">{subtitle}</p> : subtitle}
-          {children}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function ellipsify(str = '', len = 4) {
-  if (str.length > 30) {
-    return str.substring(0, len) + '..' + str.substring(str.length - len, str.length)
-  }
-  return str
-}
-
-export function useTransactionToast() {
-  return (signature: string) => {
-    toast.success(
-      <div className={'text-center'}>
-        <div className="text-lg">Transaction sent</div>
-        <ExplorerLink path={`tx/${signature}`} label={'View Transaction'} className="btn btn-xs btn-primary" />
-      </div>,
-    )
-  }
 }
