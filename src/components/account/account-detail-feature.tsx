@@ -34,7 +34,7 @@ export default function AccountDetailFeature() {
         }
       >
       </AppHero>
-      <CoinflipbetFeature></CoinflipbetFeature>
+      <CoinflipbetFeature />
     </div>
   )
 }
