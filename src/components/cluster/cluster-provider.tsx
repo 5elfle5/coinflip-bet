@@ -1,4 +1,5 @@
-import { activeClusterAtom, activeClustersAtom, clusterAtom, clustersAtom, Context } from '@/constants/default-clusters'
+import { activeClusterAtom, activeClustersAtom, clusterAtom, clustersAtom } from '@/constants/atoms'
+import { Context } from '@/custom-hooks/cluster/use-cluster'
 import { getClusterUrlParam } from '@/functions/cluster/get-cluster-url-param'
 import { Cluster } from '@/models/cluster'
 import { ClusterProviderContext } from '@/models/cluster-provider-context'
