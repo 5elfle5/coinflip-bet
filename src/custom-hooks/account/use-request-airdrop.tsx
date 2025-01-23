@@ -1,19 +1,10 @@
+import { useTransactionToast } from '@/components/ui/ui-layout'
 import { useConnection } from '@solana/wallet-adapter-react'
 import {
   LAMPORTS_PER_SOL,
   PublicKey,
 } from '@solana/web3.js'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useTransactionToast } from '../ui/ui-layout'
-
-export function useGetBalance({ address }: { address: PublicKey }) {
-  const { connection } = useConnection()
-
-  return useQuery({
-    queryKey: ['get-balance', { endpoint: connection.rpcEndpoint, address }],
-    queryFn: () => connection.getBalance(address),
-  })
-}
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export function useRequestAirdrop({ address }: { address: PublicKey }) {
   const { connection } = useConnection()

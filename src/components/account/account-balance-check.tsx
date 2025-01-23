@@ -1,29 +1,8 @@
-import { useWallet } from '@solana/wallet-adapter-react'
-import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js'
+import { PublicKey } from '@solana/web3.js'
 import { useCluster } from '../cluster/cluster-data-access'
-import {
-  useGetBalance,
-  useRequestAirdrop,
-} from './account-data-access'
+import { useGetBalance } from '@/custom-hooks/account/use-get-balance'
+import { useRequestAirdrop } from '@/custom-hooks/account/use-request-airdrop'
 
-export function AccountBalance({ address }: { address: PublicKey }) {
-  const query = useGetBalance({ address })
-
-  return (
-    <div>
-      <h1 className="text-3xl font-bold cursor-pointer" onClick={() => query.refetch()}>
-        {query.data ? <BalanceSol balance={query.data} /> : '...'} SOL
-      </h1>
-    </div>
-  )
-}
-export function AccountChecker() {
-  const { publicKey } = useWallet()
-  if (!publicKey) {
-    return null
-  }
-  return <AccountBalanceCheck address={publicKey} />
-}
 export function AccountBalanceCheck({ address }: { address: PublicKey }) {
   const { cluster } = useCluster()
   const mutation = useRequestAirdrop({ address })
@@ -50,6 +29,3 @@ export function AccountBalanceCheck({ address }: { address: PublicKey }) {
   return null
 }
 
-function BalanceSol({ balance }: { balance: number }) {
-  return <span>{Math.round((balance / LAMPORTS_PER_SOL) * 100000) / 100000}</span>
-}

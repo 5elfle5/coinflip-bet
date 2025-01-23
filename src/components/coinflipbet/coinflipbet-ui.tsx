@@ -1,8 +1,8 @@
 import { PublicKey } from '@solana/web3.js'
 import { useMemo } from 'react'
-import { ExplorerLink } from '../cluster/cluster-ui'
 import { ellipsify } from '../ui/ui-layout'
 import { useWager, useCoinflipbetProgramAccount as useCoinFlip } from './coinflipbet-data-access'
+import { ExplorerLink } from '../cluster/explorer-link'
 
 export function Wager() {
   const { createWager, closeWager } = useWager()

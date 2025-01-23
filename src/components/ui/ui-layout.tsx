@@ -1,9 +1,11 @@
 import { ReactNode, Suspense } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 import { Link, useLocation } from 'react-router-dom'
-import { AccountChecker } from '../account/account-ui'
-import { ClusterChecker, ClusterUiSelect, ExplorerLink } from '../cluster/cluster-ui'
+import { AccountChecker } from '../account/account-checker'
+import { ClusterUiSelect } from '../cluster/cluster-ui-select'
 import { WalletButton } from '../solana/solana-provider'
+import { ClusterChecker } from '../cluster/cluster-checker'
+import { ExplorerLink } from '../cluster/explorer-link'
 
 export function UiLayout({ children, links }: { children: ReactNode; links: { label: string; path: string }[] }) {
   const pathname = useLocation().pathname
