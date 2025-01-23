@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SolanaProvider } from './components/solana/solana-provider'
 import { AppRoutes } from './app/app-routes'
 import './index.css'
-import { ClusterProvider } from './components/cluster/cluster-data-access'
+import { ClusterProvider } from './components/cluster/cluster-provider'
 
 const client = new QueryClient();
 

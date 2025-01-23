@@ -1,8 +1,9 @@
 import { PublicKey } from '@solana/web3.js'
 import { useMemo } from 'react'
 import { ellipsify } from '../ui/ui-layout'
-import { useWager, useCoinflipbetProgramAccount as useCoinFlip } from './coinflipbet-data-access'
 import { ExplorerLink } from '../cluster/explorer-link'
+import { useWager } from '@/custom-hooks/coinflip/use-wager'
+import { useCoinflip } from '@/custom-hooks/coinflip/use-coinflip'
 
 export function Wager() {
   const { createWager, closeWager } = useWager()
@@ -61,7 +62,7 @@ export function CoinflipBet() {
 }
 
 function CoinflipCard({ account }: { account: PublicKey }) {
-  const { accountQuery, betMutation, flipMutation, closeMutation } = useCoinFlip({
+  const { accountQuery, betMutation, flipMutation, closeMutation } = useCoinflip({
     account,
   });
 
