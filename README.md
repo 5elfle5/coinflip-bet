@@ -34,6 +34,12 @@
 
 ### run:
 
+to run with a single command do:
+
+`npm run dev`
+
+to run everything separately do
+
 `npm run anchor-localnet`
 
 (if you see this error "no such command: build-sbf" do 
@@ -43,12 +49,8 @@ add
 
 to .bashrc (or .zshrc if you use zsh))
 
-in an other tab do
-
-`solana airdrop 3 8rAzBfiAhTseoJZGyfijc4WFWFwTvZfgBXtNNDaX5qP7`
-
-(this is the pubkey for the keys inside init-script, you can generate your own keys)
+in separate terminal tab do:
 
 `ts-node init-script/src/init.ts`
 
-`npm run dev`
+`vite`
