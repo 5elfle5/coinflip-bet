@@ -2,5 +2,6 @@ node_modules
 init-script/node_modules
 test-ledger
 dist
+.VSCodeCounter
 
 tsconfig.app.tsbuildinfo
