@@ -1,5 +1,5 @@
 
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SolanaProvider } from '../solana/solana-provider'
 import { ClusterProvider } from '../cluster/cluster-provider'
@@ -9,7 +9,7 @@ const client = new QueryClient();
 
 export function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <QueryClientProvider client={client}>
         <ClusterProvider>
           <SolanaProvider>
@@ -17,6 +17,6 @@ export function App() {
           </SolanaProvider>
         </ClusterProvider>
       </QueryClientProvider>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
