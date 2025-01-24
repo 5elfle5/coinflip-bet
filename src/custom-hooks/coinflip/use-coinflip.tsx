@@ -34,7 +34,7 @@ export function useCoinflip({ account }: { account: PublicKey }) {
         [Buffer.from('wager'), payer.toBuffer()],
         program.programId
       );
-      return program.methods.flip(new BN(200000000))
+      return program.methods.flip(new BN(2000000))
         .accounts({ payer, wager })
         .rpc();
     },
@@ -52,7 +52,7 @@ export function useCoinflip({ account }: { account: PublicKey }) {
         program.programId
       );
 
-      return program.methods.bet(new BN(100000000))
+      return program.methods.bet(new BN(1000000))
         .accounts({ payer, wager })
         .rpc();
     },
