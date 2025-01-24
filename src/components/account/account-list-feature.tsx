@@ -6,7 +6,7 @@ export default function AccountListFeature() {
   const { publicKey } = useWallet()
 
   if (publicKey) {
-    return <Navigate to={`/account/${publicKey.toString()}`} replace />
+    return <Navigate to={`/coinflip`} replace />
   }
 
   return (

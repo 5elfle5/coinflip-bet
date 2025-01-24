@@ -10,5 +10,5 @@ export const links: { label: string; path: string }[] = [
 
 export const routes: RouteObject[] = [
   { path: '/account/', element: <AccountListFeature /> },
-  { path: '/account/:address', element: <AccountDetailFeature /> },
+  { path: '/coinflip', element: <AccountDetailFeature /> },
 ]
