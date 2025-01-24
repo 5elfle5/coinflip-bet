@@ -5,3 +5,4 @@ dist
 .VSCodeCounter
 
 tsconfig.app.tsbuildinfo
+package-lock.json

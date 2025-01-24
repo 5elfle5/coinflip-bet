@@ -1,9 +1,10 @@
-import { Keypair, Connection } from "@solana/web3.js";
+import { Keypair, Connection, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { Program, Wallet, AnchorProvider, setProvider, BN } from "@coral-xyz/anchor";
 import * as fs from 'fs';
 import type { Coinflipbet } from "../anchor/target/types/coinflipbet";
 import idl from "../anchor/target/idl/coinflipbet.json";
 
+// const connection = new Connection("https://api.devnet.solana.com", "confirmed");
 const connection = new Connection("http://localhost:8899", "confirmed");
 
 const main = async () => {
@@ -13,7 +14,13 @@ const main = async () => {
   const provider = new AnchorProvider(connection, wallet, { commitment: 'confirmed' });
   setProvider(provider);
   const program = new Program(idl as Coinflipbet, provider);
-  await connection.getLatestBlockhash(),
+  const [latestBlockhash, signature] = await Promise.all([
+    connection.getLatestBlockhash(),
+    connection.requestAirdrop(wallet.publicKey, 3 * LAMPORTS_PER_SOL),
+  ])
+
+  await connection.confirmTransaction({ signature, ...latestBlockhash }, 'confirmed')
+  console.log('added 3 SOL to master wallet')
   await program.methods
     .initialize()
     .accounts({

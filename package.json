@@ -9,7 +9,7 @@
     "anchor-build": "cd anchor && anchor build",
     "anchor-localnet": "cd anchor && anchor localnet",
     "anchor-test": "cd anchor && anchor test",
-    "dev": "vite",
+    "dev": "concurrently \"cd anchor && anchor localnet\" \"ts-node scripts/init.ts\" \"vite\"",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -23,6 +23,7 @@
     "@solana/web3.js": "^1.95.3",
     "@tabler/icons-react": "^3.15.0",
     "@tanstack/react-query": "^5.55.2",
+    "concurrently": "^9.1.2",
     "daisyui": "^4.12.10",
     "jotai": "^2.9.3",
     "node-stdlib-browser": "^1.2.0",
