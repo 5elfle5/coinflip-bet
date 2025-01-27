@@ -12,7 +12,8 @@ declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
 pub mod coinflipbet {
     use super::*;
 
-  pub fn initialize(_ctx: Context<InitializeBankroll>) -> Result<()> {
+  pub fn initialize(ctx: Context<InitializeBankroll>) -> Result<()> {
+    msg!("Bankroll PDA: {}", ctx.accounts.bankroll.key());
     Ok(())
   }
 
