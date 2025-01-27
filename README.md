@@ -18,9 +18,11 @@
 
 `corepack prepare pnpm@9 --activate`
 
-- install ts-node
+- install ts-node and vite
 
 `npm i -g ts-node`
+
+`npm i -g vite`
 
 - install & build
 
@@ -51,6 +53,6 @@ to .bashrc (or .zshrc if you use zsh))
 
 in separate terminal tab do:
 
-`ts-node init-script/src/init.ts`
+`ts-node scripts/init.ts`
 
 `vite`

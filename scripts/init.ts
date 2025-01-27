@@ -8,7 +8,7 @@ import idl from "../anchor/target/idl/coinflipbet.json";
 const connection = new Connection("http://localhost:8899", "confirmed");
 
 const main = async () => {
-  const keypairData = JSON.parse(fs.readFileSync('/home/andy/dev/coinflip-bet/scripts/keys.json', 'utf-8'));
+  const keypairData = JSON.parse(fs.readFileSync('/Users/andrej/dev/coinflip-bet/scripts/keys.json', 'utf-8'));
   const keypair = Keypair.fromSecretKey(Uint8Array.from(keypairData));
   const wallet = new Wallet(keypair);
   const provider = new AnchorProvider(connection, wallet, { commitment: 'confirmed' });
