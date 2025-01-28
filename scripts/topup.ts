@@ -1,9 +1,9 @@
 
-import { Keypair, Connection, PublicKey } from "@solana/web3.js";
+import { Keypair, Connection } from "@solana/web3.js";
 import { Program, Wallet, AnchorProvider, setProvider, BN } from "@coral-xyz/anchor";
 import * as fs from 'fs';
-import type { Coinflipbet } from "../../anchor/target/types/coinflipbet";
-import idl from "../../anchor/target/idl/coinflipbet.json";
+import type { Coinflipbet } from "../anchor/target/types/coinflipbet";
+import idl from "../anchor/target/idl/coinflipbet.json";
 
 const connection = new Connection("http://localhost:8899", "confirmed");
 
