@@ -9,7 +9,7 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
     account,
   });
 
-  const count = useMemo(() => accountQuery.data?.won.toString(), [accountQuery.data?.won.toString()])
+  const count = useMemo(() => accountQuery.data?.won.toString(), [accountQuery.data?.won])
 
   return accountQuery.isLoading ? (
     <span className="loading loading-spinner loading-lg"></span>
@@ -43,10 +43,7 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
             <button
               className="btn btn-xs btn-secondary btn-outline"
               onClick={() => {
-                if (!window.confirm('Are you sure you want to close this account?')) {
-                  return
-                }
-                return closeMutation.mutateAsync()
+                return closeMutation.mutateAsync();
               }}
               disabled={closeMutation.isPending}
             >
