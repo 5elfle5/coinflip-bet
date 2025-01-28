@@ -2,11 +2,12 @@ import { ReactNode, Suspense } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { Link, useLocation } from 'react-router-dom'
 import { AccountChecker } from '../account/account-checker'
-import { ClusterUiSelect } from '../cluster/cluster-ui-select'
 import { ClusterChecker } from '../cluster/cluster-checker'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
+import { useCluster } from '@/custom-hooks/cluster/use-cluster'
 
 export function UiLayout({ children, links }: { children: ReactNode; links: { label: string; path: string }[] }) {
+  const { cluster } = useCluster()
   const pathname = useLocation().pathname
 
   return (
@@ -28,7 +29,8 @@ export function UiLayout({ children, links }: { children: ReactNode; links: { la
         </div>
         <div className="flex-none space-x-2">
           <WalletMultiButton />
-          <ClusterUiSelect />
+          {cluster.name}
+          {/* <ClusterUiSelect /> */}
         </div>
       </div>
       <ClusterChecker>

@@ -3,6 +3,7 @@ init-script/node_modules
 test-ledger
 dist
 .VSCodeCounter
+.DS_Store
 
 tsconfig.app.tsbuildinfo
 package-lock.json
