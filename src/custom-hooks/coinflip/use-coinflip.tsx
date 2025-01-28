@@ -5,27 +5,29 @@ import { BN } from '@coral-xyz/anchor'
 import { useCluster } from '@/custom-hooks/cluster/use-cluster'
 import { useWager } from './use-wager'
 import { useTransactionToast } from '../ui/use-transaction-toast'
+import { useGetBalance } from '../account/use-get-balance'
 
 export function useCoinflip({ account }: { account: PublicKey }) {
   const { cluster } = useCluster();
   const transactionToast = useTransactionToast();
   const { program, accounts } = useWager();
   const wallet = useWallet()
+  const balance = useGetBalance({ address: wallet.publicKey ?? Keypair.generate().publicKey });
   const payer = wallet.publicKey ?? Keypair.generate().publicKey;
 
   const accountQuery = useQuery({
     queryKey: ['wager', 'fetch', { cluster, account }],
     queryFn: () => program.account.wager.fetch(account),
-  })
+  });
 
   const closeMutation = useMutation({
     mutationKey: ['wager', 'close', { cluster, account }],
     mutationFn: () => program.methods.closeWager().accounts({ wager: account }).rpc(),
     onSuccess: (tx) => {
-      transactionToast(tx)
-      return accounts.refetch()
+      transactionToast(tx);
+      return accounts.refetch();
     },
-  })
+  });
 
   const flipMutation = useMutation({
     mutationKey: ['coin', 'flip', { cluster, account }],
@@ -39,10 +41,11 @@ export function useCoinflip({ account }: { account: PublicKey }) {
         .rpc();
     },
     onSuccess: (tx) => {
-      transactionToast(tx)
-      return accountQuery.refetch()
+      transactionToast(tx);
+      balance.refetch();
+      return accountQuery.refetch();
     },
-  })
+  });
 
   const betMutation = useMutation({
     mutationKey: ['coin', 'bet', { cluster, account }],
@@ -51,16 +54,16 @@ export function useCoinflip({ account }: { account: PublicKey }) {
         [Buffer.from('wager'), payer.toBuffer()],
         program.programId
       );
-
       return program.methods.bet(new BN(1000000))
         .accounts({ payer, wager })
         .rpc();
     },
     onSuccess: (tx) => {
-      transactionToast(tx)
-      return accountQuery.refetch()
+      transactionToast(tx);
+      balance.refetch();
+      return accountQuery.refetch();
     },
-  })
+  });
 
   return {
     accountQuery,
