@@ -21,24 +21,25 @@ const main = async () => {
 
   // await connection.confirmTransaction({ signature, ...latestBlockhash }, 'confirmed')
   // console.log('added 3 SOL to master wallet')
-  await connection.getLatestBlockhash();
-  await program.methods
+  const blockhash = connection.getLatestBlockhash();
+  const init = program.methods
     .initialize()
     .accounts({
       payer: keypair.publicKey,
     })
     .signers([keypair])
     .rpc();
+  await Promise.all([blockhash, init])
   console.log('initialized bankroll');
 
-  await program.methods
-    .topup(new BN(200000000))
-    .accounts({
-      payer: wallet.publicKey
-    })
-    .signers([keypair])
-    .rpc();
-  console.log('added 2 SOL to bankroll');
+  // await program.methods
+  //   .topup(new BN(200000000))
+  //   .accounts({
+  //     payer: wallet.publicKey
+  //   })
+  //   .signers([keypair])
+  //   .rpc();
+  // console.log('added 2 SOL to bankroll');
 };
 
 main().catch((err) => console.error("An error occurred:", err));

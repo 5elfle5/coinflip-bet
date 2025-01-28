@@ -6,7 +6,7 @@ use anchor_lang::system_program::{ transfer, Transfer };
 mod structs;
 use structs::*;
 
-declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
+declare_id!("7PFuMxE8XdCY1RyKkfrqE29pHcdveHJ9sQV63rxCM8xx");
 
 #[program]
 pub mod coinflipbet {
@@ -14,6 +14,7 @@ pub mod coinflipbet {
 
   pub fn initialize(ctx: Context<InitializeBankroll>) -> Result<()> {
     msg!("Bankroll PDA: {}", ctx.accounts.bankroll.key());
+    msg!("Payer PDA: {}", ctx.accounts.payer.key());
     Ok(())
   }
 
