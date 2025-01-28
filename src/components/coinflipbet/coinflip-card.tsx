@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ExplorerLink } from '../cluster/explorer-link'
 import { useCoinflip } from '@/custom-hooks/coinflip/use-coinflip'
 import { ellipsify } from '../ui/ellipsify';
@@ -8,6 +8,16 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
   const { accountQuery, betMutation, flipMutation, closeMutation } = useCoinflip({
     account,
   });
+  const [betDisabled, setBetDisabled] = useState(false);
+  const [flipDisabled, setFlipDisabled] = useState(true);
+  useEffect(() => {
+    setBetDisabled(() => true);
+    setFlipDisabled(() => false);
+  }, [betMutation.isSuccess]);
+  useEffect(() => {
+    setBetDisabled(() => false);
+    setFlipDisabled(() => true);
+  }, [flipMutation.isSuccess]);
 
   const count = useMemo(() => accountQuery.data?.won.toString(), [accountQuery.data?.won])
 
@@ -24,14 +34,14 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
             <button
               className="btn btn-xs lg:btn-md btn-outline"
               onClick={() => betMutation.mutateAsync()}
-              disabled={betMutation.isPending}
+              disabled={betMutation.isPending || betDisabled}
             >
               Bet
             </button>
             <button
               className="btn btn-xs lg:btn-md btn-outline"
               onClick={() => flipMutation.mutateAsync()}
-              disabled={flipMutation.isPending}
+              disabled={flipMutation.isPending || flipDisabled}
             >
               Flip
             </button>
