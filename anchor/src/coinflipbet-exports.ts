@@ -21,7 +21,7 @@ export function getCoinflipbetProgramId(cluster: Cluster) {
     case 'devnet':
     case 'testnet':
       // This is the program ID for the Coinflipbet program on devnet and testnet.
-      return new PublicKey('coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF')
+      return new PublicKey('7PFuMxE8XdCY1RyKkfrqE29pHcdveHJ9sQV63rxCM8xx')
     case 'mainnet-beta':
     default:
       return COINFLIPBET_PROGRAM_ID
