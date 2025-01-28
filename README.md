@@ -2,13 +2,13 @@
 
 ## How to run:
 
-### install:
+### install software:
 
 - node,
 - rust+solana+anchor like here (https://solana.com/docs/intro/installation)
 - phantom wallet chrome extension
 
-### prepare solana & pnpm:
+### prepare:
 
 - create solana keys
 - set solana cluster to local
