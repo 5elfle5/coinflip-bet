@@ -34,6 +34,10 @@
 
 `npm install`
 
+- switch to localnet 
+
+(find usages of https://api.devnet.solana.com in the project and replace them with http://localhost:8899)
+
 ### run:
 
 to run with a single command do:
