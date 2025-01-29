@@ -10,28 +10,28 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
   });
   const [betDisabled, setBetDisabled] = useState(false);
   const [flipDisabled, setFlipDisabled] = useState(true);
-  useEffect(() => {
-    setBetDisabled(() => true);
-    setFlipDisabled(() => false);
-  }, [betMutation.isSuccess]);
-  useEffect(() => {
-    setBetDisabled(() => false);
-    setFlipDisabled(() => true);
-  }, [flipMutation.isSuccess]);
 
   const won = useMemo(() => accountQuery.data?.won.toString(), [accountQuery.data?.won])
   const flipped = useMemo(() => accountQuery.data?.flipped.toString(), [accountQuery.data?.flipped]);
   const betPlaced = useMemo(() => accountQuery.data?.betPlaced.toString(), [accountQuery.data?.betPlaced]);
   const betState = useMemo(() => {
     if ((!betPlaced || betPlaced === 'false') && (!flipped || flipped === 'false')) {
+      setBetDisabled(() => false);
+      setFlipDisabled(() => true);
       return 'Place Your Bet';
     }
     if ((betPlaced === 'true') && (!flipped || flipped === 'false')) {
+      setBetDisabled(() => true);
+      setFlipDisabled(() => false);
       return 'Flip the coin';
     }
     if (won === 'true') {
+      setBetDisabled(() => false);
+      setFlipDisabled(() => true);
       return 'Won';
     }
+    setBetDisabled(() => false);
+    setFlipDisabled(() => true);
     return 'Lost';
   } , [won, betPlaced, flipped] )
 
@@ -69,7 +69,7 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
               onClick={() => {
                 return closeMutation.mutateAsync();
               }}
-              disabled={closeMutation.isPending}
+              disabled={closeMutation.isPending || betPlaced === 'true'}
             >
               Close
             </button>

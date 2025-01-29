@@ -494,6 +494,13 @@ export type Coinflipbet = {
       ]
     }
   ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "instructionNotPermitted",
+      "msg": "Given instruction is not permitted in current state"
+    }
+  ],
   "types": [
     {
       "name": "bankroll",

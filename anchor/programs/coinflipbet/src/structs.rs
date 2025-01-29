@@ -1,5 +1,11 @@
 use anchor_lang::prelude::*;
 
+#[error_code]
+pub enum CoinflipError {
+    #[msg("Given instruction is not permitted in current state")]
+    InstructionNotPermitted,
+}
+
 #[account]
 #[derive(InitSpace)]
 pub struct Wager {

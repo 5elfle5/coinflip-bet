@@ -488,6 +488,13 @@
       ]
     }
   ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InstructionNotPermitted",
+      "msg": "Given instruction is not permitted in current state"
+    }
+  ],
   "types": [
     {
       "name": "Bankroll",

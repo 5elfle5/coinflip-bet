@@ -26,7 +26,10 @@ pub mod coinflipbet {
     Ok(())
   }
 
-  pub fn close_wager(_ctx: Context<CloseWager>) -> Result<()> {
+  pub fn close_wager(ctx: Context<CloseWager>) -> Result<()> {
+    if ctx.accounts.wager.bet_placed {
+      return Err(CoinflipError::InstructionNotPermitted.into());
+    }
     Ok(())
   }
 

@@ -20,6 +20,7 @@ const main = async () => {
     program.programId
   );
   console.log(bankroll.toString());
+
   await connection.getLatestBlockhash();
   await program.methods
     .closeBankroll()
