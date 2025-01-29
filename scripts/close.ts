@@ -31,6 +31,7 @@ const main = async () => {
     .signers([keypair])
     .rpc();
   console.log('closed bankroll');
+
 };
 
 main().catch((err) => console.error("An error occurred:", err));

@@ -1,9 +1,12 @@
 {
-    "git.ignoreLimitWarning": true,
-    "cSpell.words": [
+    "version": "0.2",
+    "ignorePaths": [],
+    "dictionaryDefinitions": [],
+    "dictionaries": [],
+    "words": [
         "andrej",
         "Blockhash",
-        "coinflip",
+        "Coinflip",
         "Coinflipbet",
         "devnet",
         "ellipsify",
@@ -12,5 +15,7 @@
         "localnet",
         "solana",
         "topup"
-    ]
+    ],
+    "ignoreWords": [],
+    "import": []
 }
