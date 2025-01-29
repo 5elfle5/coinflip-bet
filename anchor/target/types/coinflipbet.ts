@@ -518,10 +518,6 @@ export type Coinflipbet = {
           {
             "name": "betOnSide",
             "type": "u8"
-          },
-          {
-            "name": "count",
-            "type": "u8"
           }
         ]
       }
