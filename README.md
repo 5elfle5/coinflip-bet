@@ -38,7 +38,7 @@
 
 (find usages of https://api.devnet.solana.com in the project and replace them with http://localhost:8899)
 
-- update path to keys.json in init.ts (line 11)
+- update path to solana key in init.ts (line 11)
 
 - uncomment ClusterUiSelect in ui-layout.tsx
 
