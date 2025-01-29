@@ -5,6 +5,7 @@
         "Blockhash",
         "coinflip",
         "Coinflipbet",
+        "devnet",
         "ellipsify",
         "Keypair",
         "LAMPORTS",

@@ -502,8 +502,12 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "roll",
-            "type": "i64"
+            "name": "bet_placed",
+            "type": "bool"
+          },
+          {
+            "name": "flipped",
+            "type": "bool"
           },
           {
             "name": "won",

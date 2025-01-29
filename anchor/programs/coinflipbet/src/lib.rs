@@ -65,7 +65,8 @@ pub mod coinflipbet {
     let timestamp = Clock::get()?.unix_timestamp;
     let roll = ((timestamp + 7789) * 997) % 100;
     let won = roll < 49;
-    result.roll = roll;
+    result.bet_placed = true;
+    result.flipped = false;
     result.won = won;
     result.bet_on_side = 1;
     if !won {
@@ -79,6 +80,8 @@ pub mod coinflipbet {
 
   pub fn flip(ctx: Context<Update>, amount: u64) -> Result<()> {
     let result = &mut ctx.accounts.wager;
+    result.bet_placed = false;
+    result.flipped = true;
     if result.won {
       let user_account = ctx.accounts.payer.clone();
       let wager_account = ctx.accounts.wager.clone();

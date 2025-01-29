@@ -3,7 +3,8 @@ use anchor_lang::prelude::*;
 #[account]
 #[derive(InitSpace)]
 pub struct Wager {
-  pub roll: i64,
+  pub bet_placed: bool,
+  pub flipped: bool,
   pub won: bool,
   pub bet_on_side: u8,
 }
@@ -20,7 +21,7 @@ pub struct CreateWager<'info> {
 
   #[account(
   init,
-  space = 8 + 1 + 1 + 8,
+  space = 1 + 1 + 1 + 1 + 8,
   payer = payer,
   seeds = [b"wager", payer.key().as_ref()],
   bump

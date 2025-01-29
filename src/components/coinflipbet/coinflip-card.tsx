@@ -19,7 +19,21 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
     setFlipDisabled(() => true);
   }, [flipMutation.isSuccess]);
 
-  const count = useMemo(() => accountQuery.data?.won.toString(), [accountQuery.data?.won])
+  const won = useMemo(() => accountQuery.data?.won.toString(), [accountQuery.data?.won])
+  const flipped = useMemo(() => accountQuery.data?.flipped.toString(), [accountQuery.data?.flipped]);
+  const betPlaced = useMemo(() => accountQuery.data?.betPlaced.toString(), [accountQuery.data?.betPlaced]);
+  const betState = useMemo(() => {
+    if ((!betPlaced || betPlaced === 'false') && (!flipped || flipped === 'false')) {
+      return 'Place Your Bet';
+    }
+    if ((betPlaced === 'true') && (!flipped || flipped === 'false')) {
+      return 'Flip the coin';
+    }
+    if (won === 'true') {
+      return 'Won';
+    }
+    return 'Lost';
+  } , [won, betPlaced, flipped] )
 
   return accountQuery.isLoading ? (
     <span className="loading loading-spinner loading-lg"></span>
@@ -28,7 +42,7 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
       <div className="card-body items-center text-center">
         <div className="space-y-6">
           <h2 className="card-title justify-center text-3xl cursor-pointer" onClick={() => accountQuery.refetch()}>
-            {count}
+            {betState}
           </h2>
           <div className="card-actions justify-around">
             <button

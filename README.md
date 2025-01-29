@@ -11,7 +11,7 @@
 ### prepare:
 
 - create solana keys
-- set solana cluster to local
+- set solana cluster to localnet
 - activate pnpm:
 
 `corepack enable`
@@ -34,7 +34,7 @@
 
 `npm install`
 
-- switch to localnet (currently not need, currently already on localnet)
+- switch to localnet (currently not needed, currently already on localnet)
 
 (find usages of https://api.devnet.solana.com in the project and replace them with http://localhost:8899)
 
