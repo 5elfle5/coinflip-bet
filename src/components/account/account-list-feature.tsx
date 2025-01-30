@@ -10,10 +10,25 @@ export default function AccountListFeature() {
   }
 
   return (
-    <div className="hero">
-      <div className="hero-content text-center">
-        <WalletMultiButton />
+    <>
+      <div>
+        <h1 className='text-4xl text-center pt-8'>How to play</h1>
+        <div className='py-8'>
+          <ul className='list-inside list-disc'>
+            <li>Go to <a href='https://chromewebstore.google.com/' className='underline'>chrome store</a> and install Solflare wallet extension</li>
+            <li>Create wallet</li>
+            <li>Go to Solflare settings and set network to devnet</li>
+            <li>Copy you wallet address</li>
+            <li>Go to <a href="https://solfaucet.togatech.org/" className='underline'>togatech</a> or other faucet to receive 1 SOL to your wallet on devnet</li>
+            <li>Connect you wallet on this site by pressing the button below</li>
+          </ul>
+        </div>
       </div>
-    </div>
+      <div className="hero">
+        <div className="hero-content text-center">
+          <WalletMultiButton />
+        </div>
+      </div>
+    </>
   )
 }

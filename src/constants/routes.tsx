@@ -5,7 +5,7 @@ const AccountListFeature = lazy(() => import('../components/account/account-list
 const AccountDetailFeature = lazy(() => import('../components/account/account-detail-feature'))
 
 export const links: { label: string; path: string }[] = [
-  { label: 'Account', path: '/account' },
+  { label: 'Coinflip', path: '/account' },
 ]
 
 export const routes: RouteObject[] = [
