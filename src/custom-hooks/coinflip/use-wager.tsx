@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getCoinflipbetProgram, getCoinflipbetProgramId } from '@project/anchor'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { Cluster, Keypair, PublicKey } from '@solana/web3.js'
@@ -38,7 +39,12 @@ export function useWager() {
       transactionToast(signature)
       return accounts.refetch()
     },
-    onError: (e) => toast.error(JSON.stringify(e)),
+    onError: (e: any) => {
+      if (e.transactionMessage) {
+        toast.error(e.transactionMessage);
+        return;
+      }
+    },
   })
 
   const closeWager = useMutation({
