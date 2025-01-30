@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useWallet } from '@solana/wallet-adapter-react'
 import { Keypair, PublicKey } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -6,6 +7,7 @@ import { useCluster } from '@/custom-hooks/cluster/use-cluster'
 import { useWager } from './use-wager'
 import { useTransactionToast } from '../ui/use-transaction-toast'
 import { useGetBalance } from '../account/use-get-balance'
+import toast from 'react-hot-toast'
 
 export function useCoinflip({ account }: { account: PublicKey }) {
   const { cluster } = useCluster();
@@ -57,6 +59,16 @@ export function useCoinflip({ account }: { account: PublicKey }) {
       return program.methods.bet(new BN(1000000))
         .accounts({ payer, wager })
         .rpc();
+    },
+    onError: (e: any) => {
+      if (e?.errorLogs?.[0]) {
+        toast.error(e.errorLogs[0]);
+        return;
+      }
+      if (e.transactionMessage) {
+        toast.error(e.transactionMessage);
+        return;
+      }
     },
     onSuccess: (tx) => {
       transactionToast(tx);

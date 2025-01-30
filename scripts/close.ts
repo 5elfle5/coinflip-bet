@@ -4,8 +4,8 @@ import * as fs from 'fs';
 import type { Coinflipbet } from "../anchor/target/types/coinflipbet";
 import idl from "../anchor/target/idl/coinflipbet.json";
 
-// const connection = new Connection("http://localhost:8899", "confirmed");
-const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+const connection = new Connection("http://localhost:8899", "confirmed");
+// const connection = new Connection("https://api.devnet.solana.com", "confirmed");
 
 const main = async () => {
   const keypairData = JSON.parse(fs.readFileSync('/Users/andrej/.config/solana/id.json', 'utf-8'));
@@ -21,16 +21,16 @@ const main = async () => {
   );
   console.log(bankroll.toString());
 
-  await connection.getLatestBlockhash();
-  await program.methods
-    .closeBankroll()
-    .accounts({
-      payer: wallet.publicKey,
-      bankroll,
-    })
-    .signers([keypair])
-    .rpc();
-  console.log('closed bankroll');
+  // await connection.getLatestBlockhash();
+  // await program.methods
+  //   .closeBankroll()
+  //   .accounts({
+  //     payer: wallet.publicKey,
+  //     bankroll,
+  //   })
+  //   .signers([keypair])
+  //   .rpc();
+  // console.log('closed bankroll');
 
 };
 
