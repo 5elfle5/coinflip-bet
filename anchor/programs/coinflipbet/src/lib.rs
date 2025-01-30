@@ -49,6 +49,9 @@ pub mod coinflipbet {
   }
 
   pub fn bet(ctx: Context<Update>, amount: u64) -> Result<()> {
+    if ctx.accounts.wager.bet_placed {
+      return Err(CoinflipError::InstructionNotPermitted.into());
+    }
     let to_pubkey = ctx.accounts.wager.to_account_info();
     let program_id = ctx.accounts.system_program.to_account_info();
     let user_pubkey = ctx.accounts.payer.to_account_info();
@@ -82,6 +85,9 @@ pub mod coinflipbet {
   }
 
   pub fn flip(ctx: Context<Update>, amount: u64) -> Result<()> {
+    if !ctx.accounts.wager.bet_placed {
+      return Err(CoinflipError::InstructionNotPermitted.into());
+    }
     let result = &mut ctx.accounts.wager;
     result.bet_placed = false;
     result.flipped = true;

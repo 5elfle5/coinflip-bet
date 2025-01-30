@@ -29,6 +29,12 @@ export function useCoinflip({ account }: { account: PublicKey }) {
       transactionToast(tx);
       return accounts.refetch();
     },
+    onError: (e: any) => {
+      if (e?.errorLogs?.[0]) {
+        toast.error(e.errorLogs[0]);
+        return;
+      }
+    }
   });
 
   const flipMutation = useMutation({
@@ -47,6 +53,16 @@ export function useCoinflip({ account }: { account: PublicKey }) {
       balance.refetch();
       return accountQuery.refetch();
     },
+    onError: (e: any) => {
+      if (e?.errorLogs?.[0]) {
+        toast.error(e.errorLogs[0]);
+        return;
+      }
+      if (e.transactionMessage) {
+        toast.error(e.transactionMessage);
+        return;
+      }
+    }
   });
 
   const betMutation = useMutation({
