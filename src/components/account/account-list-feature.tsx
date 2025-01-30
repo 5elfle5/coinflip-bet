@@ -20,7 +20,7 @@ export default function AccountListFeature() {
             <li>Go to Solflare settings and set network to devnet</li>
             <li>Copy you wallet address</li>
             <li>Go to <a href="https://solfaucet.togatech.org/" className='underline'>togatech</a> or other faucet to receive 1 SOL to your wallet on devnet</li>
-            <li>Connect you wallet on this site by pressing the button below</li>
+            <li>Select wallet by pressing the button below</li>
           </ul>
         </div>
       </div>
