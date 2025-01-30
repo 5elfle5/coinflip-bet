@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ExplorerLink } from '../cluster/explorer-link'
 import { useCoinflip } from '@/custom-hooks/coinflip/use-coinflip'
 import { ellipsify } from '../ui/ellipsify';
