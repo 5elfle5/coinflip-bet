@@ -19,11 +19,11 @@ export function CoinflipBet() {
       {accounts.isLoading ? (
         <span className="loading loading-spinner loading-lg"></span>
       ) : accounts.data?.length ? (
-        <div className="grid md:grid-cols-2 gap-4">
+        <>
           {accounts.data?.map((account) => (
             <CoinflipCard key={account.publicKey.toString()} account={account.publicKey} />
           ))}
-        </div>
+        </>
       ) : (
         <div className="text-center">
           <h2 className={'text-2xl'}>No accounts</h2>
