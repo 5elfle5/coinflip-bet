@@ -18,21 +18,21 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
     if ((!betPlaced || betPlaced === 'false') && (!flipped || flipped === 'false')) {
       setBetDisabled(() => false);
       setFlipDisabled(() => true);
-      return 'Place Your Bet';
+      return 'place-your-bet';
     }
     if ((betPlaced === 'true') && (!flipped || flipped === 'false')) {
       setBetDisabled(() => true);
       setFlipDisabled(() => false);
-      return 'Flip the coin';
+      return 'flip-the-coin';
     }
     if (won === 'true') {
       setBetDisabled(() => false);
       setFlipDisabled(() => true);
-      return 'Won';
+      return 'heads';
     }
     setBetDisabled(() => false);
     setFlipDisabled(() => true);
-    return 'Lost';
+    return 'tails';
   } , [won, betPlaced, flipped] )
 
   return accountQuery.isLoading ? (
@@ -42,7 +42,11 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
       <div className="card-body items-center text-center">
         <div className="space-y-6">
           <h2 className="card-title justify-center text-3xl cursor-pointer" onClick={() => accountQuery.refetch()}>
-            {betState}
+            {/* {betState} */}
+            <div id="coin" className={betState}>
+              <div className="side-a"></div>
+              <div className="side-b"></div>
+            </div>
           </h2>
           <div className="card-actions justify-around">
             <button
