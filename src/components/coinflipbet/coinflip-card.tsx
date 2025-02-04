@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import { ExplorerLink } from '../cluster/explorer-link'
 import { useCoinflip } from '@/custom-hooks/coinflip/use-coinflip'
 import { ellipsify } from '../ui/ellipsify';
+import { SelectSide } from '../ui/select-side';
 
 export function CoinflipCard({ account }: { account: PublicKey }) {
   const { accountQuery, betMutation, flipMutation, closeMutation } = useCoinflip({
@@ -34,6 +35,7 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
     setFlipDisabled(() => true);
     return 'tails';
   } , [won, betPlaced, flipped] )
+  const [isHeads, setIsHeads] = useState(false);
 
   return accountQuery.isLoading ? (
     <span className="loading loading-spinner loading-lg"></span>
@@ -41,28 +43,33 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
     <div className="card card-bordered border-base-300 border-4 text-neutral-content">
       <div className="card-body items-center text-center">
         <div className="space-y-6">
-          <h2 className="card-title justify-center text-3xl cursor-pointer" onClick={() => accountQuery.refetch()}>
             {/* {betState} */}
-            <div id="coin" className={betState}>
-              <div className="side-a"></div>
-              <div className="side-b"></div>
+            <div className='flex'>
+              <SelectSide isHeads={isHeads} setIsHeads={setIsHeads} />
+              <button
+                className="btn btn-xs lg:btn-md btn-outline ml-4 self-center"
+                onClick={() => betMutation.mutateAsync()}
+                disabled={betMutation.isPending || betDisabled}
+              >
+                Bet
+              </button>
+
             </div>
-          </h2>
+            <div className='flex'>
+              <div id="coin" className={betState}>
+                <div className="side-a"></div>
+                <div className="side-b"></div>
+              </div>
+              <button
+                className="btn btn-xs lg:btn-md btn-outline self-center"
+                onClick={() => flipMutation.mutateAsync()}
+                disabled={flipMutation.isPending || flipDisabled}
+              >
+                Flip
+              </button>
+
+            </div>
           <div className="card-actions justify-around">
-            <button
-              className="btn btn-xs lg:btn-md btn-outline"
-              onClick={() => betMutation.mutateAsync()}
-              disabled={betMutation.isPending || betDisabled}
-            >
-              Bet
-            </button>
-            <button
-              className="btn btn-xs lg:btn-md btn-outline"
-              onClick={() => flipMutation.mutateAsync()}
-              disabled={flipMutation.isPending || flipDisabled}
-            >
-              Flip
-            </button>
           </div>
           <div className="text-center space-y-4">
             <p>
