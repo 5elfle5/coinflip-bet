@@ -40,11 +40,14 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
   } , [betOnSide, fellOnSide, betPlaced, flipped] )
 
   const coinSide = useMemo(() => {
-    if (fellOnSide === '1') {
+    if (flipped === 'true' && fellOnSide === '1') {
       return 'heads';
     }
-    return 'tails';
-  } , [fellOnSide] )
+    if (flipped === 'true' && fellOnSide === '0') {
+      return 'tails';
+    }
+    return '';
+  } , [fellOnSide, flipped] )
 
   return accountQuery.isLoading ? (
     <span className="loading loading-spinner loading-lg"></span>
