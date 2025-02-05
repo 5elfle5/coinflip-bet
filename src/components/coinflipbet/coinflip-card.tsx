@@ -22,22 +22,29 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
     if ((!betPlaced || betPlaced === 'false') && (!flipped || flipped === 'false')) {
       setBetDisabled(() => false);
       setFlipDisabled(() => true);
-      return '';
+      return 'Place Your Bet';
     }
     if ((betPlaced === 'true') && (!flipped || flipped === 'false')) {
       setBetDisabled(() => true);
       setFlipDisabled(() => false);
-      return '';
+      return 'Flip The Coin';
     }
-    if (fellOnSide === '1') {
+    if (fellOnSide === betOnSide) {
       setBetDisabled(() => false);
       setFlipDisabled(() => true);
-      return 'heads';
+      return 'Won!';
     }
     setBetDisabled(() => false);
     setFlipDisabled(() => true);
-    return 'tails';
+    return 'Lost...';
   } , [betOnSide, fellOnSide, betPlaced, flipped] )
+
+  const coinSide = useMemo(() => {
+    if (fellOnSide === '1') {
+      return 'heads';
+    }
+    return 'tails';
+  } , [fellOnSide] )
 
   return accountQuery.isLoading ? (
     <span className="loading loading-spinner loading-lg"></span>
@@ -45,7 +52,9 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
     <div className="card card-bordered border-base-300 border-4 text-neutral-content">
       <div className="card-body items-center text-center">
         <div className="space-y-6">
-            {/* {betState} */}
+            <h2 className='text-2xl'>
+              {betState}
+            </h2>
             <div className='flex'>
               <SelectSide isHeads={isHeads} setIsHeads={setIsHeads} />
               <button
@@ -58,7 +67,7 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
 
             </div>
             <div className='flex'>
-              <div id="coin" className={betState}>
+              <div id="coin" className={coinSide}>
                 <div className="side-a"></div>
                 <div className="side-b"></div>
               </div>
