@@ -2,7 +2,6 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { Keypair, PublicKey } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { BN } from '@coral-xyz/anchor'
 import { useCluster } from '@/custom-hooks/cluster/use-cluster'
 import { useWager } from './use-wager'
 import { useTransactionToast } from '../ui/use-transaction-toast'
@@ -44,7 +43,7 @@ export function useCoinflip({ account }: { account: PublicKey }) {
         [Buffer.from('wager'), payer.toBuffer()],
         program.programId
       );
-      return program.methods.flip(new BN(2000000))
+      return program.methods.flip()
         .accounts({ payer, wager })
         .rpc();
     },
@@ -67,12 +66,12 @@ export function useCoinflip({ account }: { account: PublicKey }) {
 
   const betMutation = useMutation({
     mutationKey: ['coin', 'bet', { cluster, account }],
-    mutationFn: () => {
+    mutationFn: (betOnSide: number) => {
       const [wager,] = PublicKey.findProgramAddressSync(
         [Buffer.from('wager'), payer.toBuffer()],
         program.programId
       );
-      return program.methods.bet(new BN(1000000))
+      return program.methods.bet(betOnSide)
         .accounts({ payer, wager })
         .rpc();
     },

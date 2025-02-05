@@ -11,8 +11,8 @@ pub enum CoinflipError {
 pub struct Wager {
   pub bet_placed: bool,
   pub flipped: bool,
-  pub won: bool,
   pub bet_on_side: u8,
+  pub fell_on_side: u8,
 }
 
 #[account]

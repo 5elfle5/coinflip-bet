@@ -51,6 +51,7 @@ h1{
 }
 
 #coin {
+  margin-right: 28px;
   transition: -webkit-transform 1s ease-in;
   -webkit-transform-style: preserve-3d;
 }

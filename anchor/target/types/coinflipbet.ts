@@ -100,8 +100,8 @@ export type Coinflipbet = {
       ],
       "args": [
         {
-          "name": "amount",
-          "type": "u64"
+          "name": "betOnSide",
+          "type": "u8"
         }
       ]
     },
@@ -287,12 +287,7 @@ export type Coinflipbet = {
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": [
-        {
-          "name": "amount",
-          "type": "u64"
-        }
-      ]
+      "args": []
     },
     {
       "name": "initialize",
@@ -523,11 +518,11 @@ export type Coinflipbet = {
             "type": "bool"
           },
           {
-            "name": "won",
-            "type": "bool"
+            "name": "betOnSide",
+            "type": "u8"
           },
           {
-            "name": "betOnSide",
+            "name": "fellOnSide",
             "type": "u8"
           }
         ]

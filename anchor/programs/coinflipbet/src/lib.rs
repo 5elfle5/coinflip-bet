@@ -48,7 +48,8 @@ pub mod coinflipbet {
     Ok(())
   }
 
-  pub fn bet(ctx: Context<Update>, amount: u64) -> Result<()> {
+  pub fn bet(ctx: Context<Update>, bet_on_side: u8) -> Result<()> {
+    const AMOUNT: u64 = 1000000;
     if ctx.accounts.wager.bet_placed {
       return Err(CoinflipError::InstructionNotPermitted.into());
     }
@@ -62,40 +63,43 @@ pub mod coinflipbet {
         to: to_pubkey.clone(),
       },
     );
-    transfer(user_transaction_context, amount)?;
+    transfer(user_transaction_context, AMOUNT)?;
     let from_pda = ctx.accounts.bankroll.clone();
     let to_account = ctx.accounts.wager.clone();
-    **from_pda.to_account_info().lamports.borrow_mut() -= amount;
-    **to_account.to_account_info().lamports.borrow_mut() += amount;
+    **from_pda.to_account_info().lamports.borrow_mut() -= AMOUNT;
+    **to_account.to_account_info().lamports.borrow_mut() += AMOUNT;
     let result = &mut ctx.accounts.wager;
     let timestamp = Clock::get()?.unix_timestamp;
     let roll = ((timestamp + 7789) * 997) % 100;
     let won = roll < 49;
     result.bet_placed = true;
     result.flipped = false;
-    result.won = won;
-    result.bet_on_side = 1;
+    result.bet_on_side = bet_on_side;
     if !won {
+      result.fell_on_side = bet_on_side;
       let bankroll_account = ctx.accounts.bankroll.clone();
       let wager_account = ctx.accounts.wager.clone();
-      **wager_account.to_account_info().lamports.borrow_mut() -= amount * 2;
-      **bankroll_account.to_account_info().lamports.borrow_mut() += amount * 2;
+      **wager_account.to_account_info().lamports.borrow_mut() -= AMOUNT * 2;
+      **bankroll_account.to_account_info().lamports.borrow_mut() += AMOUNT * 2;
+    } else {
+      result.fell_on_side = if bet_on_side == 0 { 1 } else { 0 };
     }
     Ok(())
   }
 
-  pub fn flip(ctx: Context<Update>, amount: u64) -> Result<()> {
+  pub fn flip(ctx: Context<Update>) -> Result<()> {
+    const AMOUNT: u64 = 2000000;
     if !ctx.accounts.wager.bet_placed {
       return Err(CoinflipError::InstructionNotPermitted.into());
     }
     let result = &mut ctx.accounts.wager;
     result.bet_placed = false;
     result.flipped = true;
-    if result.won {
+    if result.bet_on_side == result.fell_on_side {
       let user_account = ctx.accounts.payer.clone();
       let wager_account = ctx.accounts.wager.clone();
-      **wager_account.to_account_info().lamports.borrow_mut() -= amount;
-      **user_account.to_account_info().lamports.borrow_mut() += amount;
+      **wager_account.to_account_info().lamports.borrow_mut() -= AMOUNT;
+      **user_account.to_account_info().lamports.borrow_mut() += AMOUNT;
     }
     Ok(())
   }

@@ -12,30 +12,32 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
   const [betDisabled, setBetDisabled] = useState(false);
   const [flipDisabled, setFlipDisabled] = useState(true);
 
-  const won = useMemo(() => accountQuery.data?.won.toString(), [accountQuery.data?.won])
+  const betOnSide = useMemo(() => accountQuery.data?.betOnSide.toString(), [accountQuery.data?.betOnSide])
+  const fellOnSide = useMemo(() => accountQuery.data?.fellOnSide.toString(), [accountQuery.data?.fellOnSide])
   const flipped = useMemo(() => accountQuery.data?.flipped.toString(), [accountQuery.data?.flipped]);
   const betPlaced = useMemo(() => accountQuery.data?.betPlaced.toString(), [accountQuery.data?.betPlaced]);
+  const [isHeads, setIsHeads] = useState(false);
   const betState = useMemo(() => {
+    setIsHeads(() => !betOnSide);
     if ((!betPlaced || betPlaced === 'false') && (!flipped || flipped === 'false')) {
       setBetDisabled(() => false);
       setFlipDisabled(() => true);
-      return 'place-your-bet';
+      return '';
     }
     if ((betPlaced === 'true') && (!flipped || flipped === 'false')) {
       setBetDisabled(() => true);
       setFlipDisabled(() => false);
-      return 'flip-the-coin';
+      return '';
     }
-    if (won === 'true') {
+    if (betOnSide === fellOnSide) {
       setBetDisabled(() => false);
       setFlipDisabled(() => true);
-      return 'heads';
+      return 'tails';
     }
     setBetDisabled(() => false);
     setFlipDisabled(() => true);
-    return 'tails';
-  } , [won, betPlaced, flipped] )
-  const [isHeads, setIsHeads] = useState(false);
+    return 'heads';
+  } , [betOnSide, fellOnSide, betPlaced, flipped] )
 
   return accountQuery.isLoading ? (
     <span className="loading loading-spinner loading-lg"></span>
@@ -48,7 +50,7 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
               <SelectSide isHeads={isHeads} setIsHeads={setIsHeads} />
               <button
                 className="btn btn-xs lg:btn-md btn-outline ml-4 self-center"
-                onClick={() => betMutation.mutateAsync()}
+                onClick={() => betMutation.mutateAsync(isHeads ? 0 : 1)}
                 disabled={betMutation.isPending || betDisabled}
               >
                 Bet

@@ -94,8 +94,8 @@
       ],
       "args": [
         {
-          "name": "amount",
-          "type": "u64"
+          "name": "bet_on_side",
+          "type": "u8"
         }
       ]
     },
@@ -281,12 +281,7 @@
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": [
-        {
-          "name": "amount",
-          "type": "u64"
-        }
-      ]
+      "args": []
     },
     {
       "name": "initialize",
@@ -517,11 +512,11 @@
             "type": "bool"
           },
           {
-            "name": "won",
-            "type": "bool"
+            "name": "bet_on_side",
+            "type": "u8"
           },
           {
-            "name": "bet_on_side",
+            "name": "fell_on_side",
             "type": "u8"
           }
         ]
