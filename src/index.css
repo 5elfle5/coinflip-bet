@@ -44,10 +44,10 @@ h1{
           box-shadow: inset 0 0 45px rgba(255,255,255,.3), 0 12px 20px -10px rgba(0,0,0,.4);
 }
 .side-a {
-  background-color: #bb0000;
+  background-color: #b00;
 }
 .side-b {
-  background-color: #3e3e3e;
+  background-color: #111;
 }
 
 #coin {
