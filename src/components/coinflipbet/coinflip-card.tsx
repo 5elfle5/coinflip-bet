@@ -18,7 +18,7 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
   const betPlaced = useMemo(() => accountQuery.data?.betPlaced.toString(), [accountQuery.data?.betPlaced]);
   const [isHeads, setIsHeads] = useState(false);
   const betState = useMemo(() => {
-    setIsHeads(() => !betOnSide);
+    setIsHeads(() => betOnSide === '1');
     if ((!betPlaced || betPlaced === 'false') && (!flipped || flipped === 'false')) {
       setBetDisabled(() => false);
       setFlipDisabled(() => true);
@@ -29,14 +29,14 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
       setFlipDisabled(() => false);
       return '';
     }
-    if (betOnSide === fellOnSide) {
+    if (fellOnSide === '1') {
       setBetDisabled(() => false);
       setFlipDisabled(() => true);
-      return 'tails';
+      return 'heads';
     }
     setBetDisabled(() => false);
     setFlipDisabled(() => true);
-    return 'heads';
+    return 'tails';
   } , [betOnSide, fellOnSide, betPlaced, flipped] )
 
   return accountQuery.isLoading ? (
@@ -50,7 +50,7 @@ export function CoinflipCard({ account }: { account: PublicKey }) {
               <SelectSide isHeads={isHeads} setIsHeads={setIsHeads} />
               <button
                 className="btn btn-xs lg:btn-md btn-outline ml-4 self-center"
-                onClick={() => betMutation.mutateAsync(isHeads ? 0 : 1)}
+                onClick={() => betMutation.mutateAsync(isHeads ? 1 : 0)}
                 disabled={betMutation.isPending || betDisabled}
               >
                 Bet
