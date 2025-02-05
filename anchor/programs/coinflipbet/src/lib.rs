@@ -76,13 +76,13 @@ pub mod coinflipbet {
     result.flipped = false;
     result.bet_on_side = bet_on_side;
     if !won {
-      result.fell_on_side = bet_on_side;
+      result.fell_on_side = if bet_on_side == 0 { 1 } else { 0 };
       let bankroll_account = ctx.accounts.bankroll.clone();
       let wager_account = ctx.accounts.wager.clone();
       **wager_account.to_account_info().lamports.borrow_mut() -= AMOUNT * 2;
       **bankroll_account.to_account_info().lamports.borrow_mut() += AMOUNT * 2;
     } else {
-      result.fell_on_side = if bet_on_side == 0 { 1 } else { 0 };
+      result.fell_on_side = bet_on_side;
     }
     Ok(())
   }
