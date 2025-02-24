@@ -70,7 +70,7 @@ pub mod coinflipbet {
     **to_account.to_account_info().lamports.borrow_mut() += AMOUNT;
     let result = &mut ctx.accounts.wager;
     let timestamp = Clock::get()?.unix_timestamp;
-    let roll = ((timestamp + 7789) * 997) % 100;
+    let roll = timestamp % 100;
     let won = roll < 49;
     result.bet_placed = true;
     result.flipped = false;
