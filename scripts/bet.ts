@@ -7,6 +7,10 @@ import idl from "../anchor/target/idl/coinflipbet.json";
 // const connection = new Connection("https://api.devnet.solana.com", "confirmed");
 const connection = new Connection("http://localhost:8899", "confirmed");
 
+const getRoll = (milliseconds: number) => {
+  return ((milliseconds + 7789) * 997) % 100;
+};
+
 function delay(delay: number) {
   return new Promise(function(resolve) {
       setTimeout(resolve, delay);
@@ -27,19 +31,34 @@ const main = async () => {
   );
   console.log(wager.toString());
 
-  await connection.getLatestBlockhash();
-  let milliseconds = new Date().getTime();
-  const roll = ((milliseconds + 7789) * 997) % 100;
-  const waitTime = 100 - roll;
-
-  await delay(waitTime);
+  // await connection.getLatestBlockhash();
+  const milliseconds = new Date().getTime();
+  const rolls = [];
+  let seriesLength = 0;
+  let seriesIndex = -1;
+  for (let i = milliseconds; i < milliseconds + 100; i++) {
+    const roll = getRoll(i);
+    if (roll < 49) {
+      seriesLength++;
+    }
+    if (roll >= 49) {
+      seriesLength = 0;
+    }
+    if (seriesLength > 9) {
+      seriesIndex = i - 10;
+      break;
+    }
+    rolls.push(roll);
+  }
   
-  milliseconds = new Date().getTime();
-  await program.methods
-    .bet(0)
-    .accounts({ payer, wager })
-    .rpc();
-  console.log('made a bet on 0');
+  if (seriesIndex >= 0) {
+    await delay(seriesIndex);
+    await program.methods
+      .bet(0)
+      .accounts({ payer, wager })
+      .rpc();
+    console.log('made a bet on 0');
+  }
 };
 
 main().catch((err) => console.error("An error occurred:", err));
