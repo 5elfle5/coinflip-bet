@@ -7,6 +7,12 @@ import idl from "../anchor/target/idl/coinflipbet.json";
 // const connection = new Connection("https://api.devnet.solana.com", "confirmed");
 const connection = new Connection("http://localhost:8899", "confirmed");
 
+function delay(delay: number) {
+  return new Promise(function(resolve) {
+      setTimeout(resolve, delay);
+  });
+}
+
 const main = async () => {
   const keypairData = JSON.parse(fs.readFileSync('/Users/andrej/.config/solana/id.json', 'utf-8'));
   const keypair = Keypair.fromSecretKey(Uint8Array.from(keypairData));
@@ -22,6 +28,13 @@ const main = async () => {
   console.log(wager.toString());
 
   await connection.getLatestBlockhash();
+  let milliseconds = new Date().getTime();
+  const roll = milliseconds % 100;
+  const waitTime = 100 - roll;
+
+  await delay(waitTime);
+  
+  milliseconds = new Date().getTime();
   await program.methods
     .bet(0)
     .accounts({ payer, wager })
