@@ -31,28 +31,35 @@ const main = async () => {
   );
   console.log(wager.toString());
 
-  // await connection.getLatestBlockhash();
+  await connection.getLatestBlockhash();
   const milliseconds = new Date().getTime();
-  const rolls = [];
+  const optimalLength = 10;
+  const minOffset = 0;
+  let rolls = [];
   let seriesLength = 0;
   let seriesIndex = -1;
-  for (let i = milliseconds; i < milliseconds + 100; i++) {
-    const roll = getRoll(i);
+  for (let i = minOffset; i < 200; i++) {
+    const roll = getRoll(milliseconds + i);
     if (roll < 49) {
       seriesLength++;
     }
     if (roll >= 49) {
       seriesLength = 0;
+      rolls = [];
+      continue;
     }
-    if (seriesLength > 9) {
-      seriesIndex = i - 10;
+    if (seriesLength >= optimalLength) {
+      seriesIndex = i - optimalLength;
       break;
     }
     rolls.push(roll);
   }
+  console.log(rolls);
+  console.log(seriesIndex);
+
   
-  if (seriesIndex >= 0) {
-    await delay(seriesIndex);
+  if (seriesIndex > minOffset) {
+    await delay(seriesIndex - minOffset);
     await program.methods
       .bet(0)
       .accounts({ payer, wager })
