@@ -29,7 +29,7 @@ const main = async () => {
 
   await connection.getLatestBlockhash();
   let milliseconds = new Date().getTime();
-  const roll = milliseconds % 100;
+  const roll = ((milliseconds + 7789) * 997) % 100;
   const waitTime = 100 - roll;
 
   await delay(waitTime);
